@@ -1,9 +1,17 @@
 pipeline {
     agent any
+    environment {
+        BRANCH = 'master'
+        REPOURL = 'https://github.com/topalach/ravendb.git'
+    }
     stages {
-        stage('Example') {
+        when {
+            branch '${BRANCH}'
+        }
+        stage('Clone repository') {
             steps {
-                echo 'Testing jenkins file integration'
+                git(url: '${REPOURL}', branch: '${BRANCH}')
+                echo 'Repository cloned successfully'
             }
         }
     }
