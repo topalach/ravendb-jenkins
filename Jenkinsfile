@@ -5,11 +5,15 @@ pipeline {
         REPOURL = 'https://github.com/topalach/ravendb.git'
     }
     stages {
+        stage('Print env') {
+            echo '${BRANCH}'
+        }
+
         stage('Clone repository') {
             when {
                 branch '${BRANCH}'
             }
-            
+
             steps {
                 git(url: '${REPOURL}', branch: '${BRANCH}')
                 echo 'Repository cloned successfully'
