@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Example') {
             steps {
-                echo 'Testing jenkins file integration'
+                echo 'Testing jenkins file integration: v3.5'
             }
         }
     }
