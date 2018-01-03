@@ -7,17 +7,17 @@ pipeline {
     stages {
         stage('Print env') {
             steps {
-                echo '${BRANCH}'
+                echo env.BRANCH
             }
         }
 
         stage('Clone repository') {
             when {
-                branch '${BRANCH}'
+                branch env.BRANCH
             }
 
             steps {
-                git(url: '${REPOURL}', branch: '${BRANCH}')
+                git(url: env.REPOURL, branch: env.BRANCH)
                 echo 'Repository cloned successfully'
             }
         }
