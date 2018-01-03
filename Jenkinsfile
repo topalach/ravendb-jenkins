@@ -6,7 +6,9 @@ pipeline {
     }
     stages {
         stage('Print env') {
-            echo '${BRANCH}'
+            steps {
+                echo '${BRANCH}'
+            }
         }
 
         stage('Clone repository') {
