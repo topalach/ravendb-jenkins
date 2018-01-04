@@ -14,14 +14,21 @@ pipeline {
       }
     }
 
-    stage('Clone and build') {
-      when { branch env.BRANCH }
+    stage ('Clone') {
+        when { branch env.BRANCH }
 
-      steps {
+        steps {
             git url: env.REPOURL, branch: env.BRANCH
-            sh 'pwd'
-            sh 'ls -al'
-            sh 'pwsh ./build.ps1 -LinuxX64'    
+        }
+    }
+
+    stage('Clone and build') {
+        when { branch env.BRANCH }
+
+        steps {
+            dir('src/Raven.Server') {
+                sh 'dotnet build'
+            }
       }
     }
 
