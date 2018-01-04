@@ -18,7 +18,7 @@ pipeline {
     }
 
     stage('Build (Windows)') {
-        when { not { isUnix } }
+        when { not { isUnix() } }
 
         steps {
             powershell './build.ps1 -WinX64'
@@ -26,7 +26,7 @@ pipeline {
     }
 
     stage('Build (Linux)') {
-        when { isUnix }
+        when { isUnix() }
 
         steps {
             sh 'pwsh ./build.ps1 -LinuxX64'
