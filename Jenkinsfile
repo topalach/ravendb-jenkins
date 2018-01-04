@@ -1,5 +1,11 @@
 pipeline {
   agent any
+
+  environment {
+    BRANCH = 'master'
+    REPOURL = 'https://github.com/topalach/ravendb.git'
+  }
+
   stages {
 
     stage('Print env') {
@@ -19,9 +25,5 @@ pipeline {
       }
     }
 
-  }
-  environment {
-    BRANCH = 'master'
-    REPOURL = 'https://github.com/topalach/ravendb.git'
   }
 }
