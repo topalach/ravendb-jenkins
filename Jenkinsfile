@@ -14,7 +14,6 @@ pipeline {
       steps {
           dir('src') {
             git url: env.REPOURL, branch: env.BRANCH
-            echo 'Repository cloned successfully'
           }
       }
     }
@@ -22,6 +21,7 @@ pipeline {
     stage('Build') {
         steps {
             dir('src') {
+                sh 'pwd'
                 sh 'ls -al'
                 sh 'pwsh ./build.ps1 -LinuxX64'
             }
