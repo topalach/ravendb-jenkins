@@ -8,21 +8,17 @@ pipeline {
       }
     }
 
-    stage('Clone repository') {
+    stage('Clone and build') {
       when { branch env.BRANCH }
 
       steps {
-        git 'https://github.com/topalach/ravendb.git'
+        git url: env.REPOURL, branch: env.BRANCH
+        sh 'pwd'
+        sh 'ls -al'
+        sh 'pwsh ./build.ps1 -LinuxX64'
       }
     }
 
-    stage('Build') {
-        steps {
-            sh 'pwd'
-            sh 'ls -al'
-            sh 'pwsh ./build.ps1 -LinuxX64'
-        }
-    }
   }
   environment {
     BRANCH = 'master'
