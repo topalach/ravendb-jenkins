@@ -12,7 +12,7 @@ pipeline {
       when { branch env.BRANCH }
 
       steps {
-        git url: env.REPOURL, branch: env.BRANCH
+        git 'https://github.com/topalach/ravendb.git'
       }
     }
 
