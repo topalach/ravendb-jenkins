@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    BRANCH = 'master'
+    BRANCH = 'v4.0'
     REPOURL = 'https://github.com/topalach/ravendb.git'
   }
 
@@ -18,13 +18,10 @@ pipeline {
       when { branch env.BRANCH }
 
       steps {
-        dir('src')
-        {
             git url: env.REPOURL, branch: env.BRANCH
             sh 'pwd'
             sh 'ls -al'
             sh 'pwsh ./build.ps1 -LinuxX64'    
-        }
       }
     }
 
