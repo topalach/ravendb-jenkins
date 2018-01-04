@@ -18,10 +18,13 @@ pipeline {
       when { branch env.BRANCH }
 
       steps {
-        git url: env.REPOURL, branch: env.BRANCH
-        sh 'pwd'
-        sh 'ls -al'
-        sh 'pwsh ./build.ps1 -LinuxX64'
+        dir('src')
+        {
+            git url: env.REPOURL, branch: env.BRANCH
+            sh 'pwd'
+            sh 'ls -al'
+            sh 'pwsh ./build.ps1 -LinuxX64'    
+        }
       }
     }
 
