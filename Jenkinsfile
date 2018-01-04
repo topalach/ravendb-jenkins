@@ -15,16 +15,12 @@ pipeline {
     }
 
     stage ('Clone') {
-        when { branch env.BRANCH }
-
         steps {
             git url: env.REPOURL, branch: env.BRANCH
         }
     }
 
     stage('Build') {
-        when { branch env.BRANCH }
-
         steps {
             dir('src/Raven.Server') {
                 sh 'dotnet build'
