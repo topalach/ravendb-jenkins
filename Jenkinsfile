@@ -16,9 +16,10 @@ pipeline {
         echo 'Repository cloned successfully'
       }
     }
-    
+
     stage('Build') {
         steps {
+            sh 'ls -al'
             sh 'pwsh ./build.ps1 -LinuxX64'
         }
     }
