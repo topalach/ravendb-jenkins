@@ -22,7 +22,7 @@ pipeline {
         }
     }
 
-    stage('Clone and build') {
+    stage('Build') {
         when { branch env.BRANCH }
 
         steps {
