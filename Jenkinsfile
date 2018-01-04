@@ -16,18 +16,8 @@ pipeline {
         echo 'Repository cloned successfully'
       }
     }
-
-    stage('Build (Windows)') {
-        when { not { isUnix() } }
-
-        steps {
-            powershell './build.ps1 -WinX64'
-        }
-    }
-
-    stage('Build (Linux)') {
-        when { isUnix() }
-
+    
+    stage('Build') {
         steps {
             sh 'pwsh ./build.ps1 -LinuxX64'
         }
