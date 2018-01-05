@@ -11,6 +11,7 @@ pipeline {
     stage('Print env') {
       steps {
         echo env.BRANCH
+        echo env.ghprbSourceBranch
       }
     }
 
@@ -20,13 +21,13 @@ pipeline {
         }
     }
 
-    stage('Build') {
-        steps {
-            dir('src/Raven.Server') {
-                sh 'dotnet build'
-            }
-      }
-    }
+    // stage('Build') {
+    //     steps {
+    //         dir('src/Raven.Server') {
+    //             sh 'dotnet build'
+    //         }
+    //   }
+    // }
 
   }
 }
