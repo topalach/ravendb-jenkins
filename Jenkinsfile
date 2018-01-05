@@ -2,7 +2,6 @@ pipeline {
   agent any
 
   environment {
-    BRANCH = 'v4.0'
     REPOURL = 'https://github.com/topalach/ravendb.git'
   }
 
@@ -10,14 +9,13 @@ pipeline {
 
     stage('Print env') {
       steps {
-        echo env.BRANCH
-        echo env.ghprbSourceBranch
       }
     }
 
     stage ('Clone') {
         steps {
-            git url: env.REPOURL, branch: env.BRANCH
+          echo 'Cloning PR source branch: ${env.ghprbSourceBranch}'
+          git url: env.REPOURL, branch: env.ghprbSourceBranch
         }
     }
 
@@ -28,6 +26,8 @@ pipeline {
     //         }
     //   }
     // }
+
+
 
   }
 }
