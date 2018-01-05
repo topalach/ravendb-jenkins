@@ -38,7 +38,7 @@ pipeline {
         //     statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCESS"]] ]
         // ]);
 
-        sh 'curl -H "Content-Type: application/json" -X POST -d \'{"state":"success","description":"desc","context":"commit/message/conventions"}\' https://api.github.com/repos/topalach/statuses/$sha1'
+        sh 'curl -H "Content-Type: application/json" -X POST -d \'{"state":"success","description":"desc","context":"commit/message/conventions"}\' https://api.github.com/repos/topalach/statuses/$ghprbActualCommit'
 
         // githubNotify status: 'SUCCESS',
         //   description: 'Convention tests passed',
