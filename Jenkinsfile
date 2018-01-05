@@ -21,9 +21,25 @@ pipeline {
     //   }
     // }
 
-    stage('commit/message/conventions') {
+    stage('Notify') {
       steps {
+        githubNotify
+          status: 'PENDING',
+          description: 'Convention tests passed',
+          context: 'commit/message/conventions',
+          repo: env.REPOURL,
+          sha: env.sha1
+
         echo 'started testing'
+
+        githubNotify
+          status: 'SUCCESS',
+          description: 'Convention tests passed',
+          context: 'commit/message/conventions',
+          repo: env.REPOURL,
+          sha: env.sha1
+
+        echo 'finished testing'
       }
     }
 
