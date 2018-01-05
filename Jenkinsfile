@@ -2,14 +2,16 @@ pipeline {
   agent any
 
   environment {
-    REPOURL = 'https://github.com/topalach/ravendb.git'
+    repoUrl = 'https://github.com/topalach/ravendb.git'
+    githubUser = 'topalach'
+    jenkinsCredentialsId = '2c3cb5b0-2e01-4746-a8f9-0cc51f8777eb'
   }
 
   stages {
 
     stage ('Clone') {
         steps {
-          git url: env.REPOURL, branch: env.ghprbSourceBranch
+          git url: env.repoUrl, branch: env.ghprbSourceBranch
         }
     }
 
@@ -23,11 +25,23 @@ pipeline {
 
     stage('Notify') {
       steps {
-        githubNotify status: 'PENDING', description: 'Convention tests passed', context: 'commit/message/conventions', repo: env.REPOURL, sha: env.sha1
+        githubNotify status: 'PENDING',
+          description: 'Convention tests passed',
+          context: 'commit/message/conventions',
+          repo: env.repoUrl,
+          credentialsId: env.jenkinsCredentialsId,
+          account: env.githubUser,
+          sha: env.sha1
 
         echo 'started testing'
 
-        githubNotify status: 'SUCCESS', description: 'Convention tests passed', context: 'commit/message/conventions', repo: env.REPOURL, sha: env.sha1
+        githubNotify status: 'SUCCESS',
+          description: 'Convention tests passed',
+          context: 'commit/message/conventions',
+          repo: env.repoUrl,
+          credentialsId: env.jenkinsCredentialsId,
+          account: env.githubUser,
+          sha: env.sha1
 
         echo 'finished testing'
       }
