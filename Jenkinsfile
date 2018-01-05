@@ -31,6 +31,7 @@ pipeline {
 
         step([
             $class: "GitHubCommitStatusSetter",
+            commitShaSource: [$class: "ManuallyEnteredShaSource", sha: env.sha1],
             reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.repoUrl],
             contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "commit/message/conventions"],
             errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
