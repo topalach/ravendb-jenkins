@@ -5,7 +5,8 @@ pipeline {
     repoUrl = 'https://github.com/topalach/ravendb.git'
     githubUser = 'topalach'
     repoName = 'ravendb'
-    jenkinsCredentialsId = '2c3cb5b0-2e01-4746-a8f9-0cc51f8777eb'
+    // jenkinsCredentialsId = '2c3cb5b0-2e01-4746-a8f9-0cc51f8777eb'
+    jenkinsCredentialsId = 'github-ravendb'
   }
 
   stages {
