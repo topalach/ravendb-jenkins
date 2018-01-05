@@ -9,6 +9,10 @@ pipeline {
     jenkinsCredentialsId = 'github-ravendb'
   }
 
+  def commonEcho() {
+    echo 'THIS IS COMMON ECHO CODE'
+  }
+
   stages {
 
     stage ('Clone') {
@@ -37,6 +41,8 @@ pipeline {
             errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "FAILED"]],
             statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCCESS"]] ]
         ]);
+
+        commonEcho()
 
         // sh 'curl -H "Content-Type: application/json" -X POST -d \'{"state":"success","description":"desc","context":"commit/message/conventions"}\' https://api.github.com/repos/topalach/statuses/$ghprbActualCommit'
 
