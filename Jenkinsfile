@@ -9,20 +9,18 @@ pipeline {
 
     stage ('Clone') {
         steps {
-          echo 'Cloning PR source branch: ${env.ghprbSourceBranch}'
+          echo 'Cloning PR source branch: $ghprbSourceBranch'
           git url: env.REPOURL, branch: env.ghprbSourceBranch
         }
     }
 
-    // stage('Build') {
-    //     steps {
-    //         dir('src/Raven.Server') {
-    //             sh 'dotnet build'
-    //         }
-    //   }
-    // }
-
-
+    stage('Build') {
+      steps {
+        dir('src/Raven.Server') {
+          sh 'dotnet build'
+        }
+      }
+    }
 
   }
 }
