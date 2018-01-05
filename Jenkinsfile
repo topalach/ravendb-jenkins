@@ -31,7 +31,9 @@ pipeline {
     }
 
     stage ('Tests') {
-      sh 'dotnet restore'
+      steps {
+        sh 'dotnet restore'
+      }
     }
 
     // stage('Build') {
