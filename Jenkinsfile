@@ -35,7 +35,7 @@ pipeline {
             reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.repoUrl],
             contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "commit/message/conventions"],
             errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "FAILED"]],
-            statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCESS"]] ]
+            statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCCESS"]] ]
         ]);
 
         // sh 'curl -H "Content-Type: application/json" -X POST -d \'{"state":"success","description":"desc","context":"commit/message/conventions"}\' https://api.github.com/repos/topalach/statuses/$ghprbActualCommit'
