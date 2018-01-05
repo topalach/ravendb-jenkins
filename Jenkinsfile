@@ -7,11 +7,6 @@ pipeline {
 
   stages {
 
-    stage('Print env') {
-      steps {
-      }
-    }
-
     stage ('Clone') {
         steps {
           echo 'Cloning PR source branch: ${env.ghprbSourceBranch}'
