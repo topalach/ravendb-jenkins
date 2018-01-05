@@ -9,7 +9,6 @@ pipeline {
 
     stage ('Clone') {
         steps {
-          echo 'Cloning PR source branch: $ghprbSourceBranch'
           git url: env.REPOURL, branch: env.ghprbSourceBranch
         }
     }
@@ -19,6 +18,14 @@ pipeline {
         dir('src/Raven.Server') {
           sh 'dotnet build'
         }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        setGitHubPullRequestStatus context: 'commit/message/conventions', state: 'PENDING'
+        echo 'started testing'
+        setGitHubPullRequestStatus context: 'commit/message/conventions', state: 'SUCCESS'
       }
     }
 
