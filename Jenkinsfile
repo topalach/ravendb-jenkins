@@ -10,7 +10,9 @@ def commentPullRequest(String context, String message, String state) {
 }
 
 pipeline {
-  agent any
+  agent {
+    node { label 'windows' }
+  }
 
   environment {
     repoUrl = 'https://github.com/topalach/ravendb.git'
@@ -23,9 +25,13 @@ pipeline {
   stages {
 
     stage ('Clone') {
-        steps {
-          git url: env.repoUrl, branch: env.ghprbSourceBranch
-        }
+      steps {
+        git url: env.repoUrl, branch: env.ghprbSourceBranch
+      }
+    }
+
+    stage ('Tests') {
+      sh 'dotnet restore'
     }
 
     // stage('Build') {
