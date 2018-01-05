@@ -4,6 +4,7 @@ pipeline {
   environment {
     repoUrl = 'https://github.com/topalach/ravendb.git'
     githubUser = 'topalach'
+    repoName = 'ravendb'
     jenkinsCredentialsId = '2c3cb5b0-2e01-4746-a8f9-0cc51f8777eb'
   }
 
@@ -25,20 +26,12 @@ pipeline {
 
     stage('Notify') {
       steps {
-        githubNotify status: 'PENDING',
-          description: 'Convention tests passed',
-          context: 'commit/message/conventions',
-          repo: env.repoUrl,
-          credentialsId: env.jenkinsCredentialsId,
-          account: env.githubUser,
-          sha: env.sha1
-
         echo 'started testing'
 
         githubNotify status: 'SUCCESS',
           description: 'Convention tests passed',
           context: 'commit/message/conventions',
-          repo: env.repoUrl,
+          repo: env.repoName,
           credentialsId: env.jenkinsCredentialsId,
           account: env.githubUser,
           sha: env.sha1
