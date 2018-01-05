@@ -29,13 +29,21 @@ pipeline {
       steps {
         echo 'started testing'
 
-        githubNotify status: 'SUCCESS',
-          description: 'Convention tests passed',
-          context: 'commit/message/conventions',
-          repo: env.repoName,
-          credentialsId: env.jenkinsCredentialsId,
-          account: env.githubUser,
-          sha: env.sha1
+        step([
+            $class: "GitHubCommitStatusSetter",
+            reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.repoUrl],
+            contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "commit/message/conventions"],
+            errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+            statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCESS"]] ]
+        ]);
+
+        // githubNotify status: 'SUCCESS',
+        //   description: 'Convention tests passed',
+        //   context: 'commit/message/conventions',
+        //   repo: env.repoName,
+        //   credentialsId: env.jenkinsCredentialsId,
+        //   account: env.githubUser,
+        //   sha: env.sha1
 
         echo 'finished testing'
       }
