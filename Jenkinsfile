@@ -13,19 +13,17 @@ pipeline {
         }
     }
 
-    stage('Build') {
-      steps {
-        dir('src/Raven.Server') {
-          sh 'dotnet build'
-        }
-      }
-    }
+    // stage('Build') {
+    //   steps {
+    //     dir('src/Raven.Server') {
+    //       sh 'dotnet build'
+    //     }
+    //   }
+    // }
 
-    stage('Test') {
+    stage('commit/message/conventions') {
       steps {
-        setGitHubPullRequestStatus context: 'commit/message/conventions', state: 'PENDING'
         echo 'started testing'
-        setGitHubPullRequestStatus context: 'commit/message/conventions', state: 'SUCCESS'
       }
     }
 
