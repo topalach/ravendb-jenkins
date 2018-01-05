@@ -29,14 +29,16 @@ pipeline {
       steps {
         echo 'started testing'
 
-        step([
-            $class: "GitHubCommitStatusSetter",
-            commitShaSource: [$class: "ManuallyEnteredShaSource", sha: env.sha1],
-            reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.repoUrl],
-            contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "commit/message/conventions"],
-            errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-            statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCESS"]] ]
-        ]);
+        // step([
+        //     $class: "GitHubCommitStatusSetter",
+        //     commitShaSource: [$class: "ManuallyEnteredShaSource", sha: env.sha1],
+        //     reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.repoUrl],
+        //     contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "commit/message/conventions"],
+        //     errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "FAILED"]],
+        //     statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "custom message", state: "SUCESS"]] ]
+        // ]);
+
+        sh 'curl -H "Content-Type: application/json" -X POST -d \'{"state":"success","description":"desc","context":"commit/message/conventions"}\' https://api.github.com/repos/topalach/statuses/$sha1'
 
         // githubNotify status: 'SUCCESS',
         //   description: 'Convention tests passed',
