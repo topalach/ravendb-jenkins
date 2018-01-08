@@ -97,10 +97,12 @@ pipeline {
       post {
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+          echo '[LOG] All tests succeeded'
         }
 
         failure {
           commentPullRequest("tests", "Tests failed", "FAILED")
+          echo '[LOG] All tests failed'
         }
       }
     }
