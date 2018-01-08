@@ -56,10 +56,17 @@ pipeline {
           }
         "'''
 
+        // try {
+        //   step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+        //     keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+        // } catch (exc) {
+        //   commentPullRequest("tests", "Tests failed", "FAILED")
+        // }
+
         try {
           step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
             keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-        } catch (exc) {
+        } catch (err) {
           commentPullRequest("tests", "Tests failed", "FAILED")
         }
 
