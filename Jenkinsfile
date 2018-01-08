@@ -53,21 +53,21 @@ pipeline {
         sh 'powershell -c "Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force"'
         echo '[LOG] Copy-Item done'
 
-        powershell 'Push-Location "test/FastTests"'
+        sh 'powershell -c "Push-Location \"test/FastTests\""'
         echo '[LOG] Push-Location done'
         sh 'dotnet xunit -configuration Release'
         echo '[LOG] dotnet xunit done'
-        powershell 'Pop-Location'
+        sh 'powershell -c "Pop-Location"'
         echo '[LOG] Pop-Location done'
 
-        powershell 'Push-Location "test/SlowTests"'
+        sh 'powershell -c "Push-Location \"test/SlowTests\""'
         echo '[LOG] Push-Location done'
         sh 'dotnet xunit -configuration Release'
         echo '[LOG] dotnet xunit 2 done'
-        powershell 'Pop-Location'
+        sh 'powershell -c "Pop-Location"'
         echo '[LOG] Pop-Location done'
 
-        powershell 'Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue'
+        sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
         echo '[LOG] Stop-Process done'
 
         commentPullRequest("tests", "tests passed", "SUCCESS")
