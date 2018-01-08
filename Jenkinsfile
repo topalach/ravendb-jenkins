@@ -34,18 +34,18 @@ pipeline {
         commentPullRequest("tests", "tests passed", "PENDING")
 
         //added for debugging purposes. Remove me pls.
-        sh 'ls -al test\\FastTests'
+        sh 'ls -al test/FastTests'
 
         powershell '''
           dotnet restore
 
-          Copy-Item "test\xunit.runner.CI.json" "test\xunit.runner.json" -Force
+          Copy-Item "test/xunit.runner.CI.json" "test/xunit.runner.json" -Force
 
-          Push-Location "test\FastTests"
+          Push-Location "test/FastTests"
           dotnet xunit -configuration Release
           Pop-Location
 
-          Push-Location "test\SlowTests"
+          Push-Location "test/SlowTests"
           dotnet xunit -configuration Release
           Pop-Location
         '''
