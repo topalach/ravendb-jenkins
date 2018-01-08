@@ -56,8 +56,10 @@ pipeline {
           }
         "'''
 
-        step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
-          keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+        catchError {
+          step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+            keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+        }
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
