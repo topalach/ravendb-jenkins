@@ -31,23 +31,28 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        commentPullRequest("tests", "tests passed", "PENDING")
-
         sh '''powershell -c "
           dotnet restore
-
           Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+        "'''
 
+        commentPullRequest("tests", "Fast tests started", "PENDING")
+
+        sh '''powershell -c "
           Push-Location \"test/FastTests\"
           dotnet xunit -configuration Release
           Pop-Location
-
-          Push-Location \"test/SlowTests\"
-          dotnet xunit -configuration Release
-          Pop-Location
-          
-          Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
         "'''
+
+        // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+
+        // sh '''powershell -c "
+        //   Push-Location \"test/SlowTests\"
+        //   dotnet xunit -configuration Release
+        //   Pop-Location
+          
+        //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+        // "'''
 
 
         // sh 'dotnet restore'
@@ -72,7 +77,7 @@ pipeline {
         // sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
         // echo '[LOG] Stop-Process done'
 
-        commentPullRequest("tests", "tests passed", "SUCCESS")
+        commentPullRequest("tests", "Tests finished", "SUCCESS")
       }
     }
 
