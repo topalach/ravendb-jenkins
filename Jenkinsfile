@@ -32,12 +32,18 @@ pipeline {
     stage ('Tests') {
       steps {
         sh 'dotnet restore'
-      }
-    }
 
-    stage('Notify') {
-      steps {
-        commentPullRequest("commit/message/conventions", "custom message", "SUCCESS")
+        powershell 'Copy-Item "test\xunit.runner.CI.json" "test\xunit.runner.json" -Force'
+
+        powershell 'Push-Location "test\FastTests"'
+        sh 'dotnet xunit -configuration Release'
+        powershell 'Pop-Location'
+
+        powershell 'Push-Location "test\SlowTests"'
+        sh 'dotnet xunit -configuration Release'
+        powershell 'Pop-Location'
+
+        commentPullRequest("tests", "tests passed", "SUCCESS")
       }
     }
 
