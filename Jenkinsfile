@@ -40,7 +40,7 @@ pipeline {
 
         sh '''powershell -c "
           Push-Location \"test/FastTests\"
-          dotnet xunit -configuration Release -xml testResults.xml
+          dotnet xunit -configuration Release -xmlv1 testResults.xml
           Pop-Location
         "'''
 
