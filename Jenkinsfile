@@ -56,10 +56,15 @@ pipeline {
           }
         "'''
 
-        catchError {
+        try {
           step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
             keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
         }
+        catch {
+          commentPullRequest("tests", "Tests failed", "FAILED")
+        }
+
+        
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
@@ -81,20 +86,9 @@ pipeline {
       }
 
       post {
-        failure {
-          commentPullRequest("tests", "Tests failed", "FAILED")
-          echo '[LOG] stage failed'
-        }
-
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-          echo '[LOG] stage succeeded'
         }
-
-        always {
-          echo '[LOG] stage always'
-        }
-
       }
     }
 
