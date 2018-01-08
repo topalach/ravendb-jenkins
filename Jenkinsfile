@@ -14,6 +14,10 @@ pipeline {
     node { label 'windows' }
   }
 
+  options {
+    timeout(time: 600, unit: 'SECONDS')
+  }
+
   environment {
     repoUrl = 'https://github.com/topalach/ravendb.git'
     githubUser = 'topalach'
@@ -61,7 +65,7 @@ pipeline {
         //   Push-Location \"test/SlowTests\"
 
         // Try {
-        //   dotnet xunit -configuration Release
+        //   dotnet xunit -configuration Release -nunit testResults.xml
         // }
         // Finally {
         //   Pop-Location
@@ -70,43 +74,17 @@ pipeline {
         //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
         // "'''
 
-
-        // sh 'dotnet restore'
-
-        // sh 'powershell -c "Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force"'
-        // echo '[LOG] Copy-Item done'
-
-        // sh 'powershell -c "Push-Location \"test/FastTests\""'
-        // echo '[LOG] Push-Location done'
-        // sh 'dotnet xunit -configuration Release'
-        // echo '[LOG] dotnet xunit done'
-        // sh 'powershell -c "Pop-Location"'
-        // echo '[LOG] Pop-Location done'
-
-        // sh 'powershell -c "Push-Location \"test/SlowTests\""'
-        // echo '[LOG] Push-Location done'
-        // sh 'dotnet xunit -configuration Release'
-        // echo '[LOG] dotnet xunit 2 done'
-        // sh 'powershell -c "Pop-Location"'
-        // echo '[LOG] Pop-Location done'
-
-        // sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
-        // echo '[LOG] Stop-Process done'
+        // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
+        //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
       }
 
       post {
-        always {
-          echo '[LOG] post stage (always)'
-        }
-
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-          echo '[LOG] All tests succeeded'
         }
 
         failure {
           commentPullRequest("tests", "Tests failed", "FAILED")
-          echo '[LOG] All tests failed'
         }
       }
     }
