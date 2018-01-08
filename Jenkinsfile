@@ -36,7 +36,7 @@ pipeline {
         sh 'dotnet restore'
 
         //added for debugging purposes. Remove me pls.
-        sh 'ls -al test'
+        sh 'ls -al test\\FastTests'
 
         powershell 'Copy-Item "test\\xunit.runner.CI.json" "test\\xunit.runner.json" -Force'
         echo '[LOG] Copy-Item done'
