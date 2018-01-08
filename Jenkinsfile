@@ -59,8 +59,7 @@ pipeline {
         try {
           step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
             keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-        }
-        catch (Exception exc) {
+        } catch (exc) {
           commentPullRequest("tests", "Tests failed", "FAILED")
         }
 
