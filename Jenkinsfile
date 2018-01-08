@@ -95,6 +95,10 @@ pipeline {
       }
 
       post {
+        always {
+          echo '[LOG] post stage (always)'
+        }
+
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
           echo '[LOG] All tests succeeded'
