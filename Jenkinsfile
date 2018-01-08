@@ -33,13 +33,13 @@ pipeline {
       steps {
         sh 'dotnet restore'
 
-        powershell 'Copy-Item "test\xunit.runner.CI.json" "test\xunit.runner.json" -Force'
+        powershell 'Copy-Item "test\\xunit.runner.CI.json" "test\\xunit.runner.json" -Force'
 
-        powershell 'Push-Location "test\FastTests"'
+        powershell 'Push-Location "test\\FastTests"'
         sh 'dotnet xunit -configuration Release'
         powershell 'Pop-Location'
 
-        powershell 'Push-Location "test\SlowTests"'
+        powershell 'Push-Location "test\\SlowTests"'
         sh 'dotnet xunit -configuration Release'
         powershell 'Pop-Location'
 
