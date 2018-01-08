@@ -79,13 +79,20 @@ pipeline {
       }
 
       post {
-        success {
-          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-        }
-
         failure {
           commentPullRequest("tests", "Tests failed", "FAILED")
+          echo '[LOG] stage failed'
         }
+
+        success {
+          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+          echo '[LOG] stage succeeded'
+        }
+
+        always {
+          echo '[LOG] stage always'
+        }
+
       }
     }
 
