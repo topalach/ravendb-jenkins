@@ -33,42 +33,44 @@ pipeline {
       steps {
         commentPullRequest("tests", "tests passed", "PENDING")
 
-        // powershell '''
-        //   dotnet restore
+        sh '''powershell -c "
+          dotnet restore
 
-        //   Copy-Item "test/xunit.runner.CI.json" "test/xunit.runner.json" -Force
+          Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
 
-        //   Push-Location "test/FastTests"
-        //   dotnet xunit -configuration Release
-        //   Pop-Location
+          Push-Location \"test/FastTests\"
+          dotnet xunit -configuration Release
+          Pop-Location
 
-        //   Push-Location "test/SlowTests"
-        //   dotnet xunit -configuration Release
-        //   Pop-Location
-        // '''
+          Push-Location \"test/SlowTests\"
+          dotnet xunit -configuration Release
+          Pop-Location
+          
+          Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+        "'''
 
 
-        sh 'dotnet restore'
+        // sh 'dotnet restore'
 
-        sh 'powershell -c "Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force"'
-        echo '[LOG] Copy-Item done'
+        // sh 'powershell -c "Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force"'
+        // echo '[LOG] Copy-Item done'
 
-        sh 'powershell -c "Push-Location \"test/FastTests\""'
-        echo '[LOG] Push-Location done'
-        sh 'dotnet xunit -configuration Release'
-        echo '[LOG] dotnet xunit done'
-        sh 'powershell -c "Pop-Location"'
-        echo '[LOG] Pop-Location done'
+        // sh 'powershell -c "Push-Location \"test/FastTests\""'
+        // echo '[LOG] Push-Location done'
+        // sh 'dotnet xunit -configuration Release'
+        // echo '[LOG] dotnet xunit done'
+        // sh 'powershell -c "Pop-Location"'
+        // echo '[LOG] Pop-Location done'
 
-        sh 'powershell -c "Push-Location \"test/SlowTests\""'
-        echo '[LOG] Push-Location done'
-        sh 'dotnet xunit -configuration Release'
-        echo '[LOG] dotnet xunit 2 done'
-        sh 'powershell -c "Pop-Location"'
-        echo '[LOG] Pop-Location done'
+        // sh 'powershell -c "Push-Location \"test/SlowTests\""'
+        // echo '[LOG] Push-Location done'
+        // sh 'dotnet xunit -configuration Release'
+        // echo '[LOG] dotnet xunit 2 done'
+        // sh 'powershell -c "Pop-Location"'
+        // echo '[LOG] Pop-Location done'
 
-        sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
-        echo '[LOG] Stop-Process done'
+        // sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
+        // echo '[LOG] Stop-Process done'
 
         commentPullRequest("tests", "tests passed", "SUCCESS")
       }
