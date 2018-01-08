@@ -46,7 +46,7 @@ pipeline {
 
         step([$class: 'XUnitBuilder',
           thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-          tools: [[$class: 'JUnitType', pattern: 'test/FastTests/**']]])
+          tools: [[$class: 'JUnitType', pattern: 'test/FastTests/testResults.xml']]])
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
