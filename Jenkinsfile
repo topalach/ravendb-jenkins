@@ -50,7 +50,7 @@ pipeline {
 
         sh 'dotnet restore'
 
-        powershell 'Copy-Item "test/xunit.runner.CI.json" "test/xunit.runner.json" -Force'
+        sh 'powershell -c "Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force"'
         echo '[LOG] Copy-Item done'
 
         powershell 'Push-Location "test/FastTests"'
