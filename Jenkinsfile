@@ -92,8 +92,16 @@ pipeline {
 
         // sh 'powershell -c "Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue"'
         // echo '[LOG] Stop-Process done'
+      }
 
-        commentPullRequest("tests", "Tests finished", "SUCCESS")
+      post {
+        success {
+          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+        }
+
+        failure {
+          commentPullRequest("tests", "Tests failed", "FAILED")
+        }
       }
     }
 
