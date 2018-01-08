@@ -19,6 +19,9 @@ pipeline {
     githubUser = 'topalach'
     repoName = 'ravendb'
     jenkinsCredentialsId = 'github-ravendb'
+
+    COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
+    Raven_Enable_Per_Test_Logging = 'true'
   }
 
   stages {
@@ -56,8 +59,13 @@ pipeline {
 
         // sh '''powershell -c "
         //   Push-Location \"test/SlowTests\"
+
+        // Try {
         //   dotnet xunit -configuration Release
+        // }
+        // Finally {
         //   Pop-Location
+        // }
           
         //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
         // "'''
