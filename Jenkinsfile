@@ -40,13 +40,16 @@ pipeline {
 
         sh '''powershell -c "
           Push-Location \"test/FastTests\"
-          dotnet xunit -configuration Release -xmlv1 testResults.xml
+          dotnet xunit -configuration Release -nunit testResults.xml
           Pop-Location
         "'''
 
-        step([$class: 'XUnitBuilder',
-          thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-          tools: [[$class: 'JUnitType', pattern: 'test/FastTests/testResults.xml']]])
+        // step([$class: 'XUnitBuilder',
+        //   thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
+        //   tools: [[$class: 'JUnitType', pattern: 'test/FastTests/testResults.xml']]])
+
+        step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+          keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
