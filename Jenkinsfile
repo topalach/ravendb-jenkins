@@ -96,7 +96,6 @@ pipeline {
 
             failure {
               commentPullRequest("tests", "Tests failed", "FAILED")
-              result = 'SUCCESS'
             }
           }
         }
