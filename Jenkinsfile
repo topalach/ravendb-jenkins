@@ -106,10 +106,7 @@ pipeline {
           steps {
             echo 'step placeholder'
 
-            // sh '''powershell -noexit "& ""scripts\\checkPRCommitMessages.ps1""" '''
-
-            powershell returnStatus: true, script: '.\\scripts\\checkPRCommitMessages.ps1'
-
+            sh '''powershell -noexit "& ""pipelineScripts\\checkPRCommitMessages.ps1""" '''
 
             // sh """powershell -c \"
             //   \$url = \"https://api.github.com/repos/${githubUser}/${repoName}/pulls/${env.ghprbSourceBranch}/commits\"
