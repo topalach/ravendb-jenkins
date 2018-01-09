@@ -119,7 +119,7 @@ pipeline {
                 if (\$match -eq \$FALSE) 
                 {
                   \$allMatched = \$FALSE
-                  Write-Host \"Commit message \'$message\' does not contain issue #\"
+                  Write-Host \"Commit message \'\$message\' does not contain issue #\"
                 }
               }
 
