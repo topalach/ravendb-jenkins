@@ -102,7 +102,7 @@ pipeline {
 
         stage ('Commit Message Conventions') {
           steps {
-            sh '''powershell -c "
+            sh "powershell -c \"
               \$url = \"https://api.github.com/repos/ravendb/ravendb/pulls/${env.ghprbSourceBranch}/commits\"
 
               \$allCommits = Invoke-RestMethod -Method Get -Uri \$url
@@ -127,7 +127,7 @@ pipeline {
               {
                 throw \"Not all commit messages contain issue #\"
               }
-            "'''
+            \""
           }
 
           post {
