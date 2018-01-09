@@ -38,67 +38,67 @@ pipeline {
 
     stage ('Pull Request Checks') {
       parallel {
-        stage ('Tests') {
-          steps {
-            sh '''powershell -c "
-              dotnet restore
-              Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
-            "'''
+        // stage ('Tests') {
+        //   steps {
+        //     sh '''powershell -c "
+        //       dotnet restore
+        //       Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+        //     "'''
 
-            commentPullRequest("tests", "Fast tests started", "PENDING")
+        //     commentPullRequest("tests", "Fast tests started", "PENDING")
 
-            sh '''powershell -c "
-              Push-Location \"test/FastTests\"
+        //     sh '''powershell -c "
+        //       Push-Location \"test/FastTests\"
 
-              Try {
-                dotnet xunit -configuration Release -nunit testResults.xml
-              }
-              Finally {
-                Pop-Location
-              }
-            "'''
+        //       Try {
+        //         dotnet xunit -configuration Release -nunit testResults.xml
+        //       }
+        //       Finally {
+        //         Pop-Location
+        //       }
+        //     "'''
 
-            script {
-              nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
+        //     script {
+        //       nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
-              if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-              {
-                // commentPullRequest("tests", "Fast Tests failed", "FAILED")
-                sh 'exit 1'
-              }
-            }
+        //       if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+        //       {
+        //         // commentPullRequest("tests", "Fast Tests failed", "FAILED")
+        //         sh 'exit 1'
+        //       }
+        //     }
 
-            echo '[LOG] continuing Tests stage after results analysis'
+        //     echo '[LOG] continuing Tests stage after results analysis'
 
-            // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+        //     // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
-            // sh '''powershell -c "
-            //   Push-Location \"test/SlowTests\"
+        //     // sh '''powershell -c "
+        //     //   Push-Location \"test/SlowTests\"
 
-            // Try {
-            //   dotnet xunit -configuration Release -nunit testResults.xml
-            // }
-            // Finally {
-            //   Pop-Location
-            // }
+        //     // Try {
+        //     //   dotnet xunit -configuration Release -nunit testResults.xml
+        //     // }
+        //     // Finally {
+        //     //   Pop-Location
+        //     // }
               
-            //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-            // "'''
+        //     //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+        //     // "'''
 
-            // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
-            //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-          }
+        //     // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
+        //     //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+        //   }
 
-          post {
-            success {
-              commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-            }
+        //   post {
+        //     success {
+        //       commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+        //     }
 
-            failure {
-              commentPullRequest("tests", "Tests failed", "FAILED")
-            }
-          }
-        }
+        //     failure {
+        //       commentPullRequest("tests", "Tests failed", "FAILED")
+        //     }
+        //   }
+        // }
 
         stage ('Commit Message Conventions') {
           steps {
@@ -114,7 +114,7 @@ pipeline {
                   Write-Host "Processing message \'$message\'"
 
                   $loweredMessage = $message.ToLowerInvariant()
-                  $match = $loweredMessage -match "ravendb-\d+" -or $loweredMessage -match "rdoc-\d+" -or $loweredMessage -match "rdbqa-\d+" -or $loweredMessage -match "rdbc-\d+" -or $loweredMessage -match "merge branch" -or $loweredMessage -match "merge remote" -or $loweredMessage -match "merge pull request"
+                  $match = $loweredMessage -match "ravendb-\\d+" -or $loweredMessage -match "rdoc-\\d+" -or $loweredMessage -match "rdbqa-\\d+" -or $loweredMessage -match "rdbc-\\d+" -or $loweredMessage -match "merge branch" -or $loweredMessage -match "merge remote" -or $loweredMessage -match "merge pull request"
                 
                 if ($match -eq $FALSE) 
                 {
