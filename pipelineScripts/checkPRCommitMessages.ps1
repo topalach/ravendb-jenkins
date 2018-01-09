@@ -4,8 +4,9 @@ $ErrorActionPreference = "Stop"
 $pullRequest = $env:ghprbSourceBranch
 $url = "https://api.github.com/repos/ravendb/ravendb/pulls/$pullRequest/commits"
 
-$allCommits = Invoke-RestMethod -Method Get -Uri $url
 Write-Host "URL: '$url'"
+
+$allCommits = Invoke-RestMethod -Method Get -Uri $url
 $allMatched = $TRUE
 
 Foreach ($commit in $allCommits) 
