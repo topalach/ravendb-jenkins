@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 $url = "https://api.github.com/repos/$env:githubUser/$env:repoName/pulls/$env:ghprbPullId/files?page="
+Write-Host '[LOG]URL:' $url
 
 $allMatched = $TRUE
 $extensions = ".cs", ".ascx", ".xaml", ".cmd", ".ps1", ".coffee", ".config", ".css", ".nuspec", ".scss", ".cshtml", ".htm", ".html", ".js", ".ts", ".msbuild", ".resx", ".ruleset", ".Stylecop", ".targets", ".tt", ".txt", ".vb", ".vbhtml", ".xml", ".xunit", ".java", ".less"
@@ -21,6 +22,8 @@ while($TRUE)
     Foreach ($file in $allFiles) 
     {
         $filename = $file.filename
+
+        Write-Host '[LOG] Filename:' $filename
     
         if (Test-Path $filename) 
         {
