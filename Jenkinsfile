@@ -24,9 +24,6 @@ pipeline {
     repoName = 'ravendb'
     jenkinsCredentialsId = 'github-ravendb'
 
-    pipelineRepoUrl = 'https://github.com/topalach/ravendb-jenkins.git'
-    pipelineRepoBranch = 'v4.0'
-
     COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
     Raven_Enable_Per_Test_Logging = 'true'
   }
@@ -37,10 +34,6 @@ pipeline {
       steps {
         dir('ravendb') {
           git url: env.repoUrl, branch: env.ghprbSourceBranch
-        }
-
-        dir('pipeline') {
-          git url: env.pipelineRepoUrl, branch: pipelineRepoBranch
         }
       }
     }
@@ -113,7 +106,11 @@ pipeline {
           steps {
             echo 'step placeholder'
 
-            sh '''powershell -noexit "& ""pipeline\\scripts\\checkPRCommitMessages.ps1""" '''
+            // sh '''powershell -noexit "& ""scripts\\checkPRCommitMessages.ps1""" '''
+
+            powershell returnStatus: true, script: '.\\scripts\\checkPRCommitMessages.ps1'
+
+
             // sh """powershell -c \"
             //   \$url = \"https://api.github.com/repos/${githubUser}/${repoName}/pulls/${env.ghprbSourceBranch}/commits\"
 
