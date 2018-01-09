@@ -103,7 +103,7 @@ pipeline {
         stage ('Commit Message Conventions') {
           steps {
             sh """powershell -c \"
-              \$url = \"https://api.github.com/repos/ravendb/ravendb/pulls/${env.ghprbSourceBranch}/commits\"
+              \$url = \"https://api.github.com/repos/${githubUser}/${repoName}/pulls/${env.ghprbSourceBranch}/commits\"
 
               \$allCommits = Invoke-RestMethod -Method Get -Uri \$url
               \$allMatched = \$TRUE
