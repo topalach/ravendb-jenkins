@@ -32,7 +32,9 @@ pipeline {
 
     stage ('Clone') {
       steps {
-        git url: env.repoUrl, branch: env.ghprbSourceBranch
+        dir ('ravendb') {
+          git url: env.repoUrl, branch: env.ghprbSourceBranch
+        }
       }
     }
 
@@ -118,7 +120,9 @@ pipeline {
 
         stage ('Commit Whitespace Conventions') {
           steps {
-            sh '''powershell -file pipelineScripts/commitWhitespaceConventions.ps1'''
+            dir ('ravendb') {
+              sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
+            }
           }
 
           post {
