@@ -63,11 +63,7 @@ pipeline {
         //   commentPullRequest("tests", "Tests failed", "FAILED")
         // }
 
-        try {
-          nunit testResultsPattern: 'TestResult.xml'
-        } catch (err) {
-          commentPullRequest("tests", "Tests failed", "FAILED")
-        }
+        nunit testResultsPattern: 'test/FastTests/testResults.xml'
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
@@ -91,6 +87,10 @@ pipeline {
       post {
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+        }
+
+        failure {
+          commentPullRequest("tests", "Tests failed", "FAILED")
         }
       }
     }
