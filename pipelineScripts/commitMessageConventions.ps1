@@ -2,8 +2,6 @@ $ErrorActionPreference = "Stop"
 
 $url = "https://api.github.com/repos/$env:githubUser/$env:repoName/pulls/$env:ghprbPullId/commits"
 
-Write-Host "URL: '$url'"
-
 $allCommits = Invoke-RestMethod -Method Get -Uri $url
 $allMatched = $TRUE
 
