@@ -36,83 +36,78 @@ pipeline {
       }
     }
 
-    try {
-      stage ('Tests') {
-        steps {
-          sh '''powershell -c "
-            dotnet restore
-            Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
-          "'''
+    stage ('Tests') {
+      steps {
+        sh '''powershell -c "
+          dotnet restore
+          Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+        "'''
 
-          commentPullRequest("tests", "Fast tests started", "PENDING")
+        commentPullRequest("tests", "Fast tests started", "PENDING")
 
-          sh '''powershell -c "
-            Push-Location \"test/FastTests\"
+        sh '''powershell -c "
+          Push-Location \"test/FastTests\"
 
-            Try {
-              dotnet xunit -configuration Release -nunit testResults.xml
-            }
-            Finally {
-              Pop-Location
-            }
-          "'''
-
-          // try {
-          //   step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
-          //     keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-          // } catch (err) {
-          //   commentPullRequest("tests", "Tests failed", "FAILED")
-          // }
-
-          // // // // step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
-          // // // //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-
-          script {
-            nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
-
-            if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-            {
-              commentPullRequest("tests", "Fast Tests failed", "FAILED")
-              sh 'exit 1'
-            }
+          Try {
+            dotnet xunit -configuration Release -nunit testResults.xml
           }
+          Finally {
+            Pop-Location
+          }
+        "'''
 
-          echo '[LOG] current results (continuing after the test results):'
-          echo currentBuild.result
-          echo result
+        // try {
+        //   step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+        //     keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+        // } catch (err) {
+        //   commentPullRequest("tests", "Tests failed", "FAILED")
+        // }
 
-          // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+        // // // // step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+        // // // //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
-          // sh '''powershell -c "
-          //   Push-Location \"test/SlowTests\"
+        script {
+          nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
-          // Try {
-          //   dotnet xunit -configuration Release -nunit testResults.xml
-          // }
-          // Finally {
-          //   Pop-Location
-          // }
-            
-          //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-          // "'''
-
-          // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
-          //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+          if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+          {
+            commentPullRequest("tests", "Fast Tests failed", "FAILED")
+            sh 'exit 1'
+          }
         }
 
-        post {
-          success {
-            commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-          }
+        echo '[LOG] current results (continuing after the test results):'
+        echo currentBuild.result
+        echo result
 
-          failure {
-            commentPullRequest("tests", "Tests failed", "FAILED")
-          }
+        // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+
+        // sh '''powershell -c "
+        //   Push-Location \"test/SlowTests\"
+
+        // Try {
+        //   dotnet xunit -configuration Release -nunit testResults.xml
+        // }
+        // Finally {
+        //   Pop-Location
+        // }
+          
+        //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+        // "'''
+
+        // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
+        //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+      }
+
+      post {
+        success {
+          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+        }
+
+        failure {
+          commentPullRequest("tests", "Tests failed", "FAILED")
         }
       }
-    } catch(err) {
-      currentBuild.result = 'UNSTABLE'
-      result = "FAIL"
     }
 
     stage ('Next Stage') {
