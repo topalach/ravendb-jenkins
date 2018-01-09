@@ -63,7 +63,10 @@ pipeline {
         //   commentPullRequest("tests", "Tests failed", "FAILED")
         // }
 
-        nunit testResultsPattern: 'test/FastTests/testResults.xml'
+        // // // // nunit testResultsPattern: 'test/FastTests/testResults.xml'
+
+        step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
+          keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
