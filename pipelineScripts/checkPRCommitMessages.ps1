@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 # $pullRequest = $branch.split("/")[0]
 $pullRequest = $env:ghprbSourceBranch
 $url = "https://api.github.com/repos/ravendb/ravendb/pulls/$pullRequest/commits"
