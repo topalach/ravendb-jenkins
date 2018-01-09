@@ -106,7 +106,7 @@ pipeline {
           steps {
             echo 'step placeholder'
 
-            sh '''powershell -file pipelineScripts\\checkPRCommitMessages.ps1'''
+            sh '''powershell -file pipelineScripts/checkPRCommitMessages.ps1'''
 
             // sh """powershell -c \"
             //   \$url = \"https://api.github.com/repos/${githubUser}/${repoName}/pulls/${env.ghprbSourceBranch}/commits\"
