@@ -71,10 +71,16 @@ pipeline {
 
           if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
           {
-            commentPullRequest("tests", "Tests failed", "FAILED")
-            currentBuild.result = 'SUCCESS'
+            commentPullRequest("tests", "Fast Tests failed", "FAILED")
+
+            echo '[LOG] current result IN IF:'
+            echo currentBuild.result
           }
         }
+
+        echo '[LOG] current result (this means we will continue executing the tests):'
+        echo currentBuild.result
+
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
