@@ -32,9 +32,7 @@ pipeline {
 
     stage ('Clone') {
       steps {
-        dir('ravendb') {
-          git url: env.repoUrl, branch: env.ghprbSourceBranch
-        }
+        git url: env.repoUrl, branch: env.ghprbSourceBranch
       }
     }
 
