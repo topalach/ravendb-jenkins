@@ -1,7 +1,6 @@
 $ErrorActionPreference = "Stop"
 
 $url = "https://api.github.com/repos/$env:githubUser/$env:repoName/pulls/$env:ghprbPullId/files?page="
-Write-Host '[LOG]URL:' $url
 
 $allMatched = $TRUE
 $extensions = ".cs", ".ascx", ".xaml", ".cmd", ".ps1", ".coffee", ".config", ".css", ".nuspec", ".scss", ".cshtml", ".htm", ".html", ".js", ".ts", ".msbuild", ".resx", ".ruleset", ".Stylecop", ".targets", ".tt", ".txt", ".vb", ".vbhtml", ".xml", ".xunit", ".java", ".less"
@@ -9,8 +8,6 @@ $extensions = ".cs", ".ascx", ".xaml", ".cmd", ".ps1", ".coffee", ".config", ".c
 $page = 1
 while($TRUE)
 {
-    Write-Host '[LOG] Current page number:' $page
-
     $allFiles = Invoke-RestMethod -Method Get -Uri "$url$page"
     $page = $page + 1
 
@@ -23,8 +20,6 @@ while($TRUE)
     {
         $filename = $file.filename
 
-        Write-Host '[LOG] Filename:' $filename
-    
         if (Test-Path $filename) 
         {
             Write-Host "Processing '$filename'"

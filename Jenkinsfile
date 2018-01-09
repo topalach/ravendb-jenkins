@@ -102,6 +102,22 @@ pipeline {
         //   }
         // }
 
+        stage ('CLA Signed') {
+          steps {
+            echo 'step placeholder'
+          }
+
+          post {
+            success {
+              commentPullRequest("cla/signed", "CLA was signed", "SUCCESS")
+            }
+
+            failure {
+              commentPullRequest("cla/signed", "CLA was not signed", "FAILED")
+            }
+          }
+        }
+
         stage ('Commit Message Conventions') {
           steps {
             sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
