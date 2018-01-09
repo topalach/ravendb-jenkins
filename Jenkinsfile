@@ -67,11 +67,12 @@ pipeline {
         // // // //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
         script {
-          try {
-            nunit testResultsPattern: 'test/FastTests/testResults.xml'
-          }
-          catch (exc) {
+          nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
+
+          if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+          {
             commentPullRequest("tests", "Tests failed", "FAILED")
+            currentBuild.result = 'SUCCESS'
           }
         }
 
