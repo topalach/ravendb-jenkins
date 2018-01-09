@@ -38,6 +38,10 @@ pipeline {
         dir('ravendb') {
           git url: env.repoUrl, branch: env.ghprbSourceBranch
         }
+
+        dir('pipeline') {
+          git url: env.pipelineRepoUrl, branch: pipelineRepoBranch
+        }
       }
     }
 
@@ -108,6 +112,8 @@ pipeline {
         stage ('Commit Message Conventions') {
           steps {
             echo 'step placeholder'
+
+            sh '''powershell -noexit "& ""C:\\pipeline\\scripts\\checkPRBackups.ps1""" '''
             // sh """powershell -c \"
             //   \$url = \"https://api.github.com/repos/${githubUser}/${repoName}/pulls/${env.ghprbSourceBranch}/commits\"
 
