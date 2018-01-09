@@ -127,7 +127,7 @@ pipeline {
               {
                 throw \"Not all commit messages contain issue #\"
               }
-            \"""""
+            \""""
           }
 
           post {
