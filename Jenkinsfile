@@ -63,12 +63,15 @@ pipeline {
         //   commentPullRequest("tests", "Tests failed", "FAILED")
         // }
 
-        // // // // nunit testResultsPattern: 'test/FastTests/testResults.xml'
-
         // // // // step([$class: 'NUnitPublisher', testResultsPattern: 'test/FastTests/testResults.xml', debug: false, 
         // // // //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
-        nunit testResultsPattern: 'test/FastTests/testResults.xml'
+        try {
+          nunit testResultsPattern: 'test/FastTests/testResults.xml'
+        }
+        catch (exc) {
+          commentPullRequest("tests", "Tests failed", "FAILED")
+        }
 
         // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
