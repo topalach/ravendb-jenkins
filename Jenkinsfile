@@ -104,7 +104,7 @@ pipeline {
 
         stage ('CLA Signed') {
           steps {
-            echo 'step placeholder'
+            sh '''powershell -file pipelineScripts/claSigned.ps1'''
           }
 
           post {
