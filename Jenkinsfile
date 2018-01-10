@@ -95,12 +95,20 @@ pipeline {
           "'''
 
           script {
+            echo '[LOG] build result before FIRST report: '
+            echo currentBuild.result
+
             nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
+
+            echo '[LOG] build result after FIRST report: '
+            echo currentBuild.result
 
             if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
             {
               commentPullRequest("tests", "Fast Tests failed", "FAILED")
               currentBuild.result = 'SUCCESS'
+
+              echo '[LOG] reported FIRST test failure'
             }
           }
 
@@ -113,14 +121,19 @@ pipeline {
           // testing purposes only
           script {
             echo '[LOG] reporting test results AGAIN'
-            echo '[LOG] build result: '
+            echo '[LOG] build result before SECOND report: '
             echo currentBuild.result
             
             nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
+            echo '[LOG] build result after SECOND report: '
+            echo currentBuild.result
+
             if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
             {
               commentPullRequest("tests", "Fast Tests failed - second report", "FAILED")
+
+              echo '[LOG] reported SECOND test failure'
             }
           }
 
