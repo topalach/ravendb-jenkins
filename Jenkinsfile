@@ -126,21 +126,21 @@ pipeline {
           }
         }
 
-        stage ('Commit Message Conventions') {
-          steps {
-            sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
-          }
+        // stage ('Commit Message Conventions') {
+        //   steps {
+        //     sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
+        //   }
 
-          post {
-            success {
-              commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
-            }
+        //   post {
+        //     success {
+        //       commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
+        //     }
 
-            failure {
-              commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
-            }
-          }
-        }
+        //     failure {
+        //       commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
+        //     }
+        //   }
+        // }
 
         stage ('Commit Whitespace Conventions') {
           steps {
