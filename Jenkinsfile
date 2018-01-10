@@ -38,105 +38,113 @@ pipeline {
       }
     }
 
-    stage ('Pull Request Checks') {
-      parallel {
-        // stage ('Tests') {
-        //   steps {
-        //     sh '''powershell -c "
-        //       dotnet restore
-        //       Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
-        //     "'''
+    stage ('CLA Signed') {
+      steps {
+        sh '''powershell -file pipelineScripts/claSigned.ps1'''
+      }
+    }
 
-        //     commentPullRequest("tests", "Fast tests started", "PENDING")
+    stage ('Commit Message Conventions') {
+      steps {
+        script {
+          try {
+            sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
+            commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
+          } catch (err) {
+            commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
+          }
+        }
+      }
+    }
 
-        //     sh '''powershell -c "
-        //       Push-Location \"test/FastTests\"
+    stage ('Commit Whitespace Conventions') {
+      steps {
+        dir ('ravendb') {
+          script {
+            try {
+              sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
+              commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
+            } catch (err) {
+              commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
+            }
+          }
+        }
+      }
+    }
 
-        //       Try {
-        //         dotnet xunit -configuration Release -nunit testResults.xml
-        //       }
-        //       Finally {
-        //         Pop-Location
-        //       }
-        //     "'''
+    stage ('Tests') {
+      steps {
+        sh '''powershell -c "
+          dotnet restore
+          Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+        "'''
 
-        //     script {
-        //       nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
+        commentPullRequest("tests", "Fast tests started", "PENDING")
 
-        //       if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-        //       {
-        //         // commentPullRequest("tests", "Fast Tests failed", "FAILED")
-        //         sh 'exit 1'
-        //       }
-        //     }
+        sh '''powershell -c "
+          Push-Location \"test/FastTests\"
 
-        //     echo '[LOG] continuing Tests stage after results analysis'
+          Try {
+            dotnet xunit -configuration Release -nunit testResults.xml
+          }
+          Finally {
+            Pop-Location
+          }
+        "'''
 
-        //     // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+        script {
+          nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
-        //     // sh '''powershell -c "
-        //     //   Push-Location \"test/SlowTests\"
+          if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+          {
+            commentPullRequest("tests", "Fast Tests failed", "FAILED")
+          }
+        }
 
-        //     // Try {
-        //     //   dotnet xunit -configuration Release -nunit testResults.xml
-        //     // }
-        //     // Finally {
-        //     //   Pop-Location
-        //     // }
-              
-        //     //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-        //     // "'''
+        echo '[LOG] continuing Tests stage after results analysis'
 
-        //     // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
-        //     //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
-        //   }
 
-        //   post {
-        //     success {
-        //       commentPullRequest("tests", "All tests succeeded", "SUCCESS")
-        //     }
 
-        //     failure {
-        //       commentPullRequest("tests", "Tests failed", "FAILED")
-        //     }
-        //   }
+        // testing purposes only
+        script {
+          nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
+
+          if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+          {
+            commentPullRequest("tests", "Fast Tests failed", "FAILED")
+          }
+        }
+
+
+
+        // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
+
+        // sh '''powershell -c "
+        //   Push-Location \"test/SlowTests\"
+
+        // Try {
+        //   dotnet xunit -configuration Release -nunit testResults.xml
         // }
+        // Finally {
+        //   Pop-Location
+        // }
+          
+        //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+        // "'''
 
-        stage ('CLA Signed') {
-          steps {
-            sh '''powershell -file pipelineScripts/claSigned.ps1'''
-          }
+        // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
+        //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
+      }
+
+      post {
+        success {
+          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
         }
 
-        stage ('Commit Message Conventions') {
-          steps {
-            script {
-              try {
-                sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
-                commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
-              } catch (err) {
-                commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
-              }
-            }
-          }
-        }
-
-        stage ('Commit Whitespace Conventions') {
-          steps {
-            dir ('ravendb') {
-              script {
-                try {
-                  sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
-                  commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
-                } catch (err) {
-                  commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
-                }
-              }
-            }
-          }
-        }
-
-      }      
+        // failure {
+        //   commentPullRequest("tests", "Tests failed", "FAILED")
+        // }
+      }
     }
 
   }
