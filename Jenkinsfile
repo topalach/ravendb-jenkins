@@ -114,7 +114,7 @@ pipeline {
               try {
                 sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
                 commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
-              } catch {
+              } catch (err) {
                 commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
               }
             }
@@ -128,7 +128,7 @@ pipeline {
                 try {
                   sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
                   commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
-                } catch {
+                } catch (err) {
                   commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
                 }
               }
