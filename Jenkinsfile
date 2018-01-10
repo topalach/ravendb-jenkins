@@ -118,21 +118,17 @@ pipeline {
             Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
           "'''
 
-          script {
-            nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
-
-            if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-            {
-              commentPullRequest("tests", "Tests failed.", "FAILED")
-            }
-          }
-
+          nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
         }
       }
 
       post {
         success {
           commentPullRequest("tests", "All tests passed.", "SUCCESS")
+        }
+
+        failure {
+          commentPullRequest("tests", "Tests failed.", "FAILED")
         }
       }
     }
