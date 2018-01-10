@@ -104,20 +104,24 @@ pipeline {
 
         stage ('CLA Signed') {
           steps {
-            echo '[LOG] currentBuild.result: ' currentBuild.result
+            echo '[LOG] currentBuild.result: '
+            echo currentBuild.result
 
             sh '''powershell -file pipelineScripts/claSigned.ps1'''
 
-            echo '[LOG] currentBuild.result: ' currentBuild.result
+            echo '[LOG] currentBuild.result: '
+            echo currentBuild.result
           }
 
           post {
             success {
-              echo '[LOG] post success currentBuild.result: ' currentBuild.result
+              echo '[LOG] post success currentBuild.result: '
+              echo currentBuild.result
             }
 
             failure {
-              echo '[LOG] post failure currentBuild.result: ' currentBuild.result
+              echo '[LOG] post failure currentBuild.result: '
+              echo currentBuild.result
             }
           }
         }
