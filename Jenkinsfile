@@ -95,67 +95,37 @@ pipeline {
           "'''
 
           script {
-            echo '[LOG] build result before FIRST report: '
-            echo currentBuild.result
-
             nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
-
-            echo '[LOG] build result after FIRST report: '
-            echo currentBuild.result
 
             if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
             {
-              commentPullRequest("tests", "Fast Tests failed", "FAILED")
-              currentBuild.result = 'SUCCESS'
-
-              echo '[LOG] reported FIRST test failure'
+              commentPullRequest("tests", "Fast Tests failed. Starting slow tests.", "FAILED")
+            } else {
+              commentPullRequest("tests", "Fast tests passed. Starting slow tests.", "PENDING")
             }
           }
 
-          echo '[LOG] continuing Tests stage after results analysis'
-          echo '[LOG] build result: '
-          echo currentBuild.result
+          sh '''powershell -c "
+            Push-Location \"test/SlowTests\"
 
+          Try {
+            dotnet xunit -configuration Release -nunit testResults.xml
+          }
+          Finally {
+            Pop-Location
+          }
+            
+            Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+          "'''
 
-
-          // testing purposes only
           script {
-            echo '[LOG] reporting test results AGAIN'
-            echo '[LOG] build result before SECOND report: '
-            echo currentBuild.result
-            
-            nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
-
-            echo '[LOG] build result after SECOND report: '
-            echo currentBuild.result
+            nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
 
             if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
             {
-              commentPullRequest("tests", "Fast Tests failed - second report", "FAILED")
-
-              echo '[LOG] reported SECOND test failure'
+              commentPullRequest("tests", "Tests failed.", "FAILED")
             }
           }
-
-          echo '[LOG] continuing Tests stage after SECOND results analysis'
-
-          // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
-
-          // sh '''powershell -c "
-          //   Push-Location \"test/SlowTests\"
-
-          // Try {
-          //   dotnet xunit -configuration Release -nunit testResults.xml
-          // }
-          // Finally {
-          //   Pop-Location
-          // }
-            
-          //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-          // "'''
-
-          // step([$class: 'NUnitPublisher', testResultsPattern: 'test/SlowTests/testResults.xml', debug: false, 
-          //   keepJUnitReports: true, skipJUnitArchiver:false, failIfNoResults: true])
 
         }
       }
@@ -164,10 +134,6 @@ pipeline {
         success {
           commentPullRequest("tests", "All tests succeeded", "SUCCESS")
         }
-
-        // failure {
-        //   commentPullRequest("tests", "Tests failed", "FAILED")
-        // }
       }
     }
 
