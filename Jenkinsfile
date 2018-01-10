@@ -125,15 +125,17 @@ pipeline {
           steps {
             dir ('ravendb') {
               script {
-                sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
-                commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
-              } catch {
-                commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
+                try {
+                  sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
+                  commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
+                } catch {
+                  commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
+                }
               }
             }
           }
         }
-        
+
       }      
     }
 
