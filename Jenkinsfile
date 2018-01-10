@@ -22,7 +22,6 @@ pipeline {
     repoUrl = 'https://github.com/topalach/ravendb.git'
     githubUser = 'topalach'
     repoName = 'ravendb'
-    jenkinsCredentialsId = 'github-ravendb'
 
     COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
     Raven_Enable_Per_Test_Logging = 'true'
