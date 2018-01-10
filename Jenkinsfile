@@ -110,10 +110,12 @@ pipeline {
           post {
             success {
               commentPullRequest("cla/signed", "CLA was signed", "SUCCESS")
+              echo '[LOG] success'
             }
 
             failure {
               commentPullRequest("cla/signed", "CLA was not signed", "FAILED")
+              echo '[LOG] failure'
             }
           }
         }
