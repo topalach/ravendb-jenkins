@@ -75,7 +75,7 @@ pipeline {
     stage ('Tests') {
       steps {
         dir ('ravendb') {
-          
+
           sh '''powershell -c "
             dotnet restore
             Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
@@ -109,15 +109,16 @@ pipeline {
 
           // testing purposes only
           script {
+            echo '[LOG] reporting test results AGAIN'
             nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
             if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
             {
-              commentPullRequest("tests", "Fast Tests failed", "FAILED")
+              commentPullRequest("tests", "Fast Tests failed - second report", "FAILED")
             }
           }
 
-
+          echo '[LOG] continuing Tests stage after SECOND results analysis'
 
           // commentPullRequest("tests", "Fast tests finished. Starting slow tests.", "PENDING")
 
