@@ -108,12 +108,12 @@ pipeline {
           sh '''powershell -c "
             Push-Location \"test/SlowTests\"
 
-          Try {
-            dotnet xunit -configuration Release -nunit testResults.xml
-          }
-          Finally {
-            Pop-Location
-          }
+            Try {
+              dotnet xunit -configuration Release -nunit testResults.xml
+            }
+            Finally {
+              Pop-Location
+            }
             
             Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
           "'''
@@ -132,7 +132,7 @@ pipeline {
 
       post {
         success {
-          commentPullRequest("tests", "All tests succeeded", "SUCCESS")
+          commentPullRequest("tests", "All tests passed.", "SUCCESS")
         }
       }
     }
