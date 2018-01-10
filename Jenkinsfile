@@ -104,61 +104,36 @@ pipeline {
 
         stage ('CLA Signed') {
           steps {
-            echo '[LOG] currentBuild.result: '
-            echo currentBuild.result
-
             sh '''powershell -file pipelineScripts/claSigned.ps1'''
-
-            echo '[LOG] currentBuild.result: '
-            echo currentBuild.result
-          }
-
-          post {
-            success {
-              echo '[LOG] post success currentBuild.result: '
-              echo currentBuild.result
-            }
-
-            failure {
-              echo '[LOG] post failure currentBuild.result: '
-              echo currentBuild.result
-            }
           }
         }
 
-        // stage ('Commit Message Conventions') {
-        //   steps {
-        //     sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
-        //   }
-
-        //   post {
-        //     success {
-        //       commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
-        //     }
-
-        //     failure {
-        //       commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
-        //     }
-        //   }
-        // }
+        stage ('Commit Message Conventions') {
+          steps {
+            script {
+              try {
+                sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
+                commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
+              } catch {
+                commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
+              }
+            }
+          }
+        }
 
         stage ('Commit Whitespace Conventions') {
           steps {
             dir ('ravendb') {
-              sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
-            }
-          }
-
-          post {
-            success {
-              commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
-            }
-
-            failure {
-              commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")
+              script {
+                sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
+                commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
+              } catch {
+                commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
+              }
             }
           }
         }
+        
       }      
     }
 
