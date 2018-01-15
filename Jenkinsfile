@@ -15,7 +15,7 @@ pipeline {
   }
 
   options {
-    timeout(time: 30, unit: 'SECONDS')
+    timeout(time: 5, unit: 'HOURS')
   }
 
   environment {
@@ -37,43 +37,42 @@ pipeline {
       }
     }
 
-    // stage ('CLA Signed') {
-    //   steps {
-    //     sh '''powershell -file pipelineScripts/claSigned.ps1'''
-    //   }
-    // }
+    stage ('CLA Signed') {
+      steps {
+        sh '''powershell -file pipelineScripts/claSigned.ps1'''
+      }
+    }
 
-    // stage ('Commit Message Conventions') {
-    //   steps {
-    //     script {
-    //       try {
-    //         sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
-    //         commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
-    //       } catch (err) {
-    //         commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
-    //       }
-    //     }
-    //   }
-    // }
+    stage ('Commit Message Conventions') {
+      steps {
+        script {
+          try {
+            sh '''powershell -file pipelineScripts/commitMessageConventions.ps1'''
+            commentPullRequest("commit/message/conventions", "Commit message conventions were fulfilled", "SUCCESS")
+          } catch (err) {
+            commentPullRequest("commit/message/conventions", "Commit message conventions were not fulfilled", "FAILED")
+          }
+        }
+      }
+    }
 
-    // stage ('Commit Whitespace Conventions') {
-    //   steps {
-    //     dir ('ravendb') {
-    //       script {
-    //         try {
-    //           sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
-    //           commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
-    //         } catch (err) {
-    //           commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    stage ('Commit Whitespace Conventions') {
+      steps {
+        dir ('ravendb') {
+          script {
+            try {
+              sh '''powershell -file ../pipelineScripts/commitWhitespaceConventions.ps1'''
+              commentPullRequest("commit/whitespace", "Commit whitespace conventions were fulfilled", "SUCCESS")
+            } catch (err) {
+              commentPullRequest("commit/whitespace", "Commit whitespace conventions were not fulfilled", "FAILED")  
+            }
+          }
+        }
+      }
+    }
 
     stage ('Tests') {
       steps {
-        // timeout(time: 30, unit: 'SECONDS') {
 
           dir ('ravendb') {
 
@@ -122,7 +121,6 @@ pipeline {
             nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
           }
 
-        // }
       }
 
       post {
