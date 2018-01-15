@@ -16,7 +16,7 @@ def commentPullRequest(String context, String message, String state) {
 
 pipeline {
   agent {
-    node { label 'windows' }
+    label 'windows || windows-slave'
   }
 
   options {
