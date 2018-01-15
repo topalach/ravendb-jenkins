@@ -73,59 +73,55 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        catchError {
+        timeout(time: 30, unit: 'SECONDS') {
 
-          timeout(time: 30, unit: 'SECONDS') {
+          dir ('ravendb') {
 
-            dir ('ravendb') {
+            sh '''powershell -c "
+              dotnet restore
+              Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+            "'''
 
-              sh '''powershell -c "
-                dotnet restore
-                Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
-              "'''
+            commentPullRequest("tests", "Fast tests started", "PENDING")
 
-              commentPullRequest("tests", "Fast tests started", "PENDING")
+            sh '''powershell -c "
+              Push-Location \"test/FastTests\"
 
-              sh '''powershell -c "
-                Push-Location \"test/FastTests\"
-
-                Try {
-                  dotnet xunit -configuration Release -nunit testResults.xml
-                }
-                Finally {
-                  Pop-Location
-                }
-              "'''
-
-              script {
-                nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
-
-                if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-                {
-                  commentPullRequest("tests", "Fast Tests failed. Starting slow tests.", "FAILED")
-                } else {
-                  commentPullRequest("tests", "Fast tests passed. Starting slow tests.", "PENDING")
-                }
+              Try {
+                dotnet xunit -configuration Release -nunit testResults.xml
               }
+              Finally {
+                Pop-Location
+              }
+            "'''
 
-              sh '''powershell -c "
-                Push-Location \"test/SlowTests\"
+            script {
+              nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
 
-                Try {
-                  dotnet xunit -configuration Release -nunit testResults.xml
-                }
-                Finally {
-                  Pop-Location
-                }
-                
-                Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-              "'''
-
-              nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
+              if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+              {
+                commentPullRequest("tests", "Fast Tests failed. Starting slow tests.", "FAILED")
+              } else {
+                commentPullRequest("tests", "Fast tests passed. Starting slow tests.", "PENDING")
+              }
             }
 
+            sh '''powershell -c "
+              Push-Location \"test/SlowTests\"
+
+              Try {
+                dotnet xunit -configuration Release -nunit testResults.xml
+              }
+              Finally {
+                Pop-Location
+              }
+              
+              Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
+            "'''
+
+            nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
           }
-          
+
         }
       }
 
@@ -136,6 +132,10 @@ pipeline {
 
         failure {
           commentPullRequest("tests", "Tests failed.", "FAILED")
+        }
+
+        aborted {
+          commentPullRequest("tests", "Tests were aborted (perhaps because of a timeout).", "FAILED")
         }
       }
     }
