@@ -14,9 +14,9 @@ pipeline {
     node { label 'windows' }
   }
 
-  // options {
-  //   timeout(time: 300, unit: 'MINUTES')
-  // }
+  options {
+    timeout(time: 30, unit: 'SECONDS')
+  }
 
   environment {
     repoUrl = 'https://github.com/topalach/ravendb.git'
@@ -73,7 +73,7 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        timeout(time: 30, unit: 'SECONDS') {
+        // timeout(time: 30, unit: 'SECONDS') {
 
           dir ('ravendb') {
 
@@ -122,7 +122,7 @@ pipeline {
             nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
           }
 
-        }
+        // }
       }
 
       post {
@@ -135,7 +135,7 @@ pipeline {
         }
 
         aborted {
-          commentPullRequest("tests", "Tests were aborted (perhaps because of a timeout).", "FAILED")
+          commentPullRequest("tests", "Tests were aborted (perhaps due to a timeout).", "FAILED")
         }
       }
     }
