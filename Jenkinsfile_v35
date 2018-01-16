@@ -1,0 +1,56 @@
+def reportXmlResults(filePath) {
+  nunit testResultsPattern: filePath, failIfNoResults: true
+}
+
+pipeline {
+  agent {
+    label 'scratch1'
+  }
+
+  options {
+    timeout(time: 7, unit: 'HOURS')
+  }
+
+  environment {
+    repoUrl = 'https://github.com/topalach/ravendb.git'
+    branch = 'v3.5-jenkins'
+
+    Raven_Enable_Per_Test_Logging = 'true'
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        dir ('ravendb') {
+          git url: env.repoUrl, branch: env.branch, poll: true
+        }
+      }
+    }
+
+    stage ('Tests') {
+      steps {
+        dir ('ravendb') {
+          bat 'powershell -c ".\\cleanup.ps1 force"'
+
+          bat 'taskkill /IM Raven.Tests.Server.Runner.exe /F /T /FI \"MEMUSAGE gt 1\"'
+
+          catchError {
+            bat 'powershell -c ".\\build.ps1 RunTests"'
+          }
+
+          reportXmlResults("Raven.SlowTests/bin/Release/testResults.xml")
+        }
+      }
+    }
+
+    stage ('After cleanup') {
+      steps {
+        dir ('ravendb') {
+          bat 'powershell -file "../RavenDB_Tests/v3.5/afterCleanup.ps1"'
+        }
+      }
+    }
+
+  }
+}
