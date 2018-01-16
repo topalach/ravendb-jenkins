@@ -4,7 +4,7 @@ def reportXmlResults(filePath) {
 
 pipeline {
   agent {
-    label 'scratch1'
+    label 'scratch3'
   }
 
   options {
