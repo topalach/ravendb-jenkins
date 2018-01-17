@@ -1,0 +1,63 @@
+def reportXmlResults(filePath) {
+  nunit testResultsPattern: filePath, failIfNoResults: true
+}
+
+pipeline {
+  agent {
+    label 'scratch3'
+  }
+
+  options {
+    timeout(time: 5, unit: 'HOURS')
+  }
+
+  environment {
+    repoUrl = 'https://github.com/topalach/ravendb.git'
+    branch = 'v3.0-jenkins'
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        dir ('ravendb') {
+          git url: env.repoUrl, branch: env.branch, poll: true
+        }
+      }
+    }
+
+    stage ('Tests') {
+      steps {
+        dir ('ravendb') {
+          bat 'powershell -c ".\\cleanup.ps1 force"'
+
+          bat 'taskkill /IM Raven.Tests.Server.Runner.exe /F /T /FI \"MEMUSAGE gt 1\"'
+
+          catchError {
+            bat 'powershell -c ".\\build.ps1 RunTests"'
+          }
+
+          reportXmlResults("Raven.Tests.Core/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Tests.Web/bin/testResults.xml");
+          reportXmlResults("Raven.Tests/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Tests.Bundles/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Tests.Issues/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Tests.FileSystem/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Tests.MailingList/bin/Release/testResults.xml");
+          reportXmlResults("Raven.SlowTests/bin/Release/testResults.xml");
+          reportXmlResults("Raven.Voron/Voron.Tests/bin/Release/testResults.xml");
+          reportXmlResults("Raven.DtcTests/bin/Release/testResults.xml");
+        }
+      }
+    }
+
+    stage ('After cleanup') {
+      steps {
+        dir ('ravendb') {
+          bat 'taskkill /IM Raven.Tests.Server.Runner.exe /F /T /FI \"MEMUSAGE gt 1\"'
+        }
+      }
+    }
+
+  }
+}
