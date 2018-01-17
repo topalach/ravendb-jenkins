@@ -81,6 +81,8 @@ pipeline {
 
           dir ('ravendb') {
 
+            bat '''powershell -file pipelineScripts/cleanup.ps1'''
+
             sh '''powershell -c "
               dotnet restore
               Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
