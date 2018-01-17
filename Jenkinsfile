@@ -81,7 +81,7 @@ pipeline {
 
           dir ('ravendb') {
 
-            bat '''powershell -file pipelineScripts/cleanup.ps1'''
+            bat '''powershell -file ../pipelineScripts/cleanup.ps1'''
 
             sh '''powershell -c "
               dotnet restore
