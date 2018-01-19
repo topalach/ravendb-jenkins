@@ -84,7 +84,7 @@ pipeline {
         }
 
         failure {
-          commentPullRequest("tests", "Tests failed.", "FAILED")
+          sendSlackNotification 'Tests failed.'
         }
 
         aborted {
