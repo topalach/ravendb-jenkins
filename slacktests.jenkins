@@ -1,7 +1,8 @@
 def sendSlackNotification(String message) {
   script {
     def color = 'warning'
-    echo "[LOG] current build result: ${currentBuild.result}"
+    echo "[LOG] currentBuild.result: ${currentBuild.result}"
+    echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
 
     if (currentBuild.result == 'STARTED') {
       color = 'danger'
@@ -20,18 +21,21 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        echo "[INLINE LOG] current build result: ${currentBuild.result}"
+        echo "[INLINE LOG] currentBuild.result: ${currentBuild.result}"
+        echo "[INLINE LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
       }
 
       post {
         always {
-          sendSlackNotification 'Reporting job status in post step.'
-          echo "[INLINE LOG] current build result: ${currentBuild.result}"
+          // sendSlackNotification 'Reporting job status in post step.'
+          echo "[INLINE LOG] currentBuild.result: ${currentBuild.result}"
+          echo "[INLINE LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
         }
 
         success {
           sendSlackNotification 'Reporting success.'
-          echo "[INLINE LOG] current build result: ${currentBuild.result}"
+          echo "[INLINE LOG] currentBuild.result: ${currentBuild.result}"
+          echo "[INLINE LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
         }
       }
     }
