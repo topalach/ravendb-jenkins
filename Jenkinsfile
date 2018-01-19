@@ -90,8 +90,25 @@ pipeline {
 
             commentPullRequest("tests", "Fast tests started", "PENDING")
 
+            dir ("test/FastTests") {
+              runAndReportTests 'Release'
+
+              script {
+                nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
+
+                if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
+                {
+                  commentPullRequest("tests", "Fast Tests failed. Starting slow tests.", "FAILED")
+                } else {
+                  commentPullRequest("tests", "Fast tests passed. Starting slow tests.", "PENDING")
+                }
+              }
+            }
+
+
+
             // sh '''powershell -c "
-            //   Push-Location \"test/FastTests\"
+            //   Push-Location \"test/SlowTests\"
 
             //   Try {
             //     dotnet xunit -configuration Release -nunit testResults.xml
@@ -99,40 +116,11 @@ pipeline {
             //   Finally {
             //     Pop-Location
             //   }
+              
+            //   Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
             // "'''
 
-
-            dir ("test/FastTests") {
-              runAndReportTests 'Release'
-            }
-
-
-
-            script {
-              nunit testResultsPattern: 'test/FastTests/testResults.xml', failIfNoResults: true
-
-              if (currentBuild.result == 'UNSTABLE' || currentBuild.result == 'FAILURE')
-              {
-                commentPullRequest("tests", "Fast Tests failed. Starting slow tests.", "FAILED")
-              } else {
-                commentPullRequest("tests", "Fast tests passed. Starting slow tests.", "PENDING")
-              }
-            }
-
-            sh '''powershell -c "
-              Push-Location \"test/SlowTests\"
-
-              Try {
-                dotnet xunit -configuration Release -nunit testResults.xml
-              }
-              Finally {
-                Pop-Location
-              }
-              
-              Stop-Process -ProcessName dotnet -ErrorAction SilentlyContinue
-            "'''
-
-            nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
+            // nunit testResultsPattern: 'test/SlowTests/testResults.xml', failIfNoResults: true
           }
 
       }
@@ -148,6 +136,10 @@ pipeline {
 
         aborted {
           commentPullRequest("tests", "Tests were aborted (perhaps due to a timeout).", "FAILED")
+        }
+
+        always {
+          archiveArtifacts artifacts: 'ravendb/test/FastTests/*.xml', fingerprint: true
         }
       }
     }
