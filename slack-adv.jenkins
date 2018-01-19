@@ -68,10 +68,11 @@ pipeline {
             "'''
 
             dir ("test/FastTests") {
-              runAndReportTests 'Release'
-
               script {
-                nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
+                catchError {
+                  runAndReportTests 'Release'
+                }
+                
                 printTestCounts
               }
             }
@@ -79,19 +80,19 @@ pipeline {
 
       }
 
-      post {
-        success {
-          sendSlackNotification 'All tests passed.'
-        }
+      // post {
+      //   success {
+      //     sendSlackNotification 'All tests passed.'
+      //   }
 
-        failure {
-          sendSlackNotification 'Tests failed.'
-        }
+      //   failure {
+      //     sendSlackNotification 'Tests failed.'
+      //   }
 
-        aborted {
-          sendSlackNotification 'Tests were aborted.'
-        }
-      }
+      //   aborted {
+      //     sendSlackNotification 'Tests were aborted.'
+      //   }
+      // }
     }
 
   }
