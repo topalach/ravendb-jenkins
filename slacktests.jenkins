@@ -14,6 +14,10 @@ def sendSlackNotification(String message) {
 
 pipeline {
 
+  agent {
+    any
+  }
+
   stages {
 
     stage ('Tests') {
