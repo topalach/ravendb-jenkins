@@ -1,16 +1,16 @@
 def sendSlackNotification(String slackMessage) {
   script {
-    def color = 'warning'
+    def color = 'danger'
     echo "[LOG] currentBuild.result: ${currentBuild.result}"
     echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
 
-    if (currentBuild.currentResult == 'STARTED') {
-      color = 'danger'
-    } else if (currentBuild.currentResult == 'SUCCESSFUL') {
+    if (currentBuild.currentResult == 'SUCCESS') {
       color = 'good'
+    } else if (currentBuild.currentResult == 'FAILURE') {
+      color = 'warning'
     }
 
-    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} ${env.BUILD_URL}"
+    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} (<${env.BUILD_URL}>|Open>)"
   }
 }
 
