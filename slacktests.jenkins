@@ -20,20 +20,18 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        sendSlackNotification 'Started the job. Will send another notification in 3 seconds.'
-
-        sleep time: 3, unit: 'SECONDS'
-
-        sendSlackNotification 'Finishing the job. Please wait for the final empty message.'
+        echo "[INLINE LOG] current build result: ${currentBuild.result}"
       }
 
       post {
         always {
           sendSlackNotification 'Reporting job status in post step.'
+          echo "[INLINE LOG] current build result: ${currentBuild.result}"
         }
 
         success {
           sendSlackNotification 'Reporting success.'
+          echo "[INLINE LOG] current build result: ${currentBuild.result}"
         }
       }
     }
