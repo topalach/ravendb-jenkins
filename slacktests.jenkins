@@ -1,0 +1,36 @@
+def sendSlackNotification(String message) {
+  script {
+    def color = '#FF0000'
+
+    if (currentBuild.result == 'STARTED') {
+      color = '#FFFF00'
+    } else if (currentBuild.result == 'SUCCESSFUL') {
+      color = '#00FF00'
+    }
+
+    slackSend color: color, message: message
+  }
+}
+
+pipeline {
+
+  stages {
+
+    stage ('Tests') {
+      steps {
+        sendSlackNotification 'Started the job. Will send another notification in 10 seconds.'
+
+        sleep time: 10, unit: 'SECONDS'
+
+        sendSlackNotification 'Finishing the job. Please wait for the final empty message.'
+      }
+
+      post {
+        always {
+          sendSlackNotification 'Reporting job status in post step.'
+        }
+      }
+    }
+
+  }
+}
