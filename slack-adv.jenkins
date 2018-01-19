@@ -31,14 +31,6 @@ pipeline {
 
   stages {
 
-    stage ('Clone') {
-      steps {
-        dir ('ravendb') {
-          git url: env.repoUrl, branch: env.branch
-        }
-      }
-    }
-
     stage ('Tests') {
       steps {
         catchError {
