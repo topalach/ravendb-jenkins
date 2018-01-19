@@ -10,7 +10,7 @@ def sendSlackNotification(String slackMessage) {
       color = 'warning'
     }
 
-    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} (<${env.BUILD_URL}>|Open>)"
+    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} (<${env.BUILD_URL}|Open>)"
   }
 }
 
@@ -21,15 +21,12 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        echo "[INLINE LOG] currentBuild.result: ${currentBuild.result}"
-        echo "[INLINE LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
+        sh 'step placeholder'
       }
 
       post {
         always {
           sendSlackNotification 'Reporting job status in post step.'
-          echo "[INLINE LOG] currentBuild.result: ${currentBuild.result}"
-          echo "[INLINE LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
         }
       }
     }

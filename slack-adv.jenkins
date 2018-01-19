@@ -1,0 +1,95 @@
+def sendSlackNotification(String slackMessage) {
+  script {
+    def color = 'danger'
+    echo "[LOG] currentBuild.result: ${currentBuild.result}"
+    echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
+
+    if (currentBuild.currentResult == 'SUCCESS') {
+      color = 'good'
+    } else if (currentBuild.currentResult == 'FAILURE') {
+      color = 'warning'
+    }
+
+    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} (<${env.BUILD_URL}|Open>)"
+  }
+}
+
+def runAndReportTests(String configuration) {
+  bat "dotnet xunit -configuration $configuration -nunit testResults.xml"
+  nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
+}
+
+def printTestCounts() {
+  script {
+    AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+    if (testResultAction != null) {
+        echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
+    }
+  }
+}
+
+pipeline {
+  agent {
+    label 'windows || windows-slave'
+  }
+
+  environment {
+    repoUrl = 'https://github.com/topalach/ravendb.git'
+    githubUser = 'topalach'
+    repoName = 'ravendb'
+
+    COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
+    Raven_Enable_Per_Test_Logging = 'true'
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        dir ('ravendb') {
+          git url: env.repoUrl, branch: env.ghprbSourceBranch
+        }
+      }
+    }
+
+    stage ('Tests') {
+      steps {
+
+          dir ('ravendb') {
+
+            bat '''powershell -file ../pipelineScripts/cleanup.ps1'''
+
+            sh '''powershell -c "
+              dotnet restore
+              Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
+            "'''
+
+            dir ("test/FastTests") {
+              runAndReportTests 'Release'
+
+              script {
+                nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
+                printTestCounts
+              }
+            }
+          }
+
+      }
+
+      post {
+        success {
+          sendSlackNotification 'All tests passed.'
+        }
+
+        failure {
+          commentPullRequest("tests", "Tests failed.", "FAILED")
+        }
+
+        aborted {
+          sendSlackNotification 'Tests were aborted.'
+        }
+      }
+    }
+
+  }
+}
