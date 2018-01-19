@@ -72,8 +72,8 @@ pipeline {
                 catchError {
                   runAndReportTests 'Release'
                 }
-                
-                printTestCounts
+
+                printTestCounts()
               }
             }
           }
