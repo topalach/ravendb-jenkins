@@ -139,7 +139,7 @@ pipeline {
         }
 
         always {
-          archiveArtifacts artifacts: 'ravendb/test/FastTests/*.xml', fingerprint: true
+          archiveArtifacts artifacts: 'ravendb/test/FastTests/**/*', fingerprint: true
         }
       }
     }
