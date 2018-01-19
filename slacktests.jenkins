@@ -1,6 +1,7 @@
 def sendSlackNotification(String message) {
   script {
     def color = 'warning'
+    echo "[LOG] current build result: ${currentBuild.result}"
 
     if (currentBuild.result == 'STARTED') {
       color = 'danger'
@@ -8,7 +9,7 @@ def sendSlackNotification(String message) {
       color = 'good'
     }
 
-    slackSend color: color, message: message
+    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${message} (<${env.BUILD_URL}|Open>)"
   }
 }
 
@@ -19,9 +20,9 @@ pipeline {
 
     stage ('Tests') {
       steps {
-        sendSlackNotification 'Started the job. Will send another notification in 10 seconds.'
+        sendSlackNotification 'Started the job. Will send another notification in 3 seconds.'
 
-        sleep time: 10, unit: 'SECONDS'
+        sleep time: 3, unit: 'SECONDS'
 
         sendSlackNotification 'Finishing the job. Please wait for the final empty message.'
       }
@@ -29,6 +30,10 @@ pipeline {
       post {
         always {
           sendSlackNotification 'Reporting job status in post step.'
+        }
+
+        success {
+          sendSlackNotification 'Reporting success.'
         }
       }
     }
