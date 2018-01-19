@@ -16,11 +16,6 @@ def sendSlackNotification(String slackMessage) {
   }
 }
 
-def runAndReportTests(String configuration) {
-  bat "dotnet xunit -configuration $configuration -nunit testResults.xml"
-  nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
-}
-
 @NonCPS
 def printTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
@@ -32,16 +27,6 @@ def printTestCounts() {
 pipeline {
   agent {
     label 'windows || windows-slave'
-  }
-
-  environment {
-    repoUrl = 'https://github.com/topalach/ravendb.git'
-    githubUser = 'topalach'
-    repoName = 'ravendb'
-    branch = 'v4.0'
-
-    COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
-    Raven_Enable_Per_Test_Logging = 'true'
   }
 
   stages {
@@ -56,27 +41,11 @@ pipeline {
 
     stage ('Tests') {
       steps {
-
-          dir ('ravendb') {
-
-            bat '''powershell -file ../pipelineScripts/cleanup.ps1'''
-
-            sh '''powershell -c "
-              dotnet restore
-              Copy-Item \"test/xunit.runner.CI.json\" \"test/xunit.runner.json\" -Force
-            "'''
-
-            dir ("test/FastTests") {
-              script {
-                catchError {
-                  runAndReportTests 'Release'
-                }
-
-                printTestCounts()
-              }
-            }
-          }
-
+        catchError {
+          nunit testResultsPattern: 'custom_files/testResults.xml', failIfNoResults: true
+        }
+        
+        printTestCounts()
       }
 
       // post {
