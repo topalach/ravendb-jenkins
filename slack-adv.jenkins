@@ -39,6 +39,7 @@ pipeline {
     repoUrl = 'https://github.com/topalach/ravendb.git'
     githubUser = 'topalach'
     repoName = 'ravendb'
+    branch = v4.0
 
     COMPlus_ReadyToRunExcludeList = 'System.Security.Cryptography.X509Certificates'
     Raven_Enable_Per_Test_Logging = 'true'
@@ -49,7 +50,7 @@ pipeline {
     stage ('Clone') {
       steps {
         dir ('ravendb') {
-          git url: env.repoUrl, branch: env.ghprbSourceBranch
+          git url: env.repoUrl, branch: env.branch
         }
       }
     }
