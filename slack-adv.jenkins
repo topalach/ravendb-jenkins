@@ -21,6 +21,7 @@ def runAndReportTests(String configuration) {
   nunit testResultsPattern: 'testResults.xml', failIfNoResults: true
 }
 
+@NonCPS
 def printTestCounts() {
   script {
     AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
