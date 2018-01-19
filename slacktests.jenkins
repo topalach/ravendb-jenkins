@@ -1,11 +1,11 @@
 def sendSlackNotification(String message) {
   script {
-    def color = '#FF0000'
+    def color = 'warning'
 
     if (currentBuild.result == 'STARTED') {
-      color = '#FFFF00'
+      color = 'danger'
     } else if (currentBuild.result == 'SUCCESSFUL') {
-      color = '#00FF00'
+      color = 'good'
     }
 
     slackSend color: color, message: message
