@@ -1,33 +1,18 @@
 import hudson.tasks.test.AbstractTestResultAction
 
-// def sendSlackNotification(String slackMessage) {
-//   script {
-//     def color = 'danger'
-
-//     if (currentBuild.currentResult == 'SUCCESS') {
-//       color = 'good'
-//     } else if (currentBuild.currentResult == 'FAILURE') {
-//       color = 'warning'
-//     }
-
-//     slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
-//   }
-// }
-
-//color: hex or good\danger\warning
-def reportToSlack(String message, String color) {
-  slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${message} (<${env.BUILD_URL}|Open>)"
-}
-
-def reportTestsToSlack(int failCount, int totalCount) {
+def sendSlackNotification(String slackMessage) {
   script {
-    if (failCount > 0) {
-      reportToSlack message: "${failCount} test(s) failed (out of ${totalCount})", color: 'warning'
-    } else if (totalCount > 0) {
-      reportToSlack message: "All tests passed (${totalCount} run)", color: 'good'
-    } else {
-      reportToSlack message: 'No tests run', color: 'danger'
+    def color = 'danger'
+    echo "[LOG] currentBuild.result: ${currentBuild.result}"
+    echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
+
+    if (currentBuild.currentResult == 'SUCCESS') {
+      color = 'good'
+    } else if (currentBuild.currentResult == 'FAILURE') {
+      color = 'warning'
     }
+
+    slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
   }
 }
 
@@ -35,8 +20,15 @@ def reportTestsToSlack(int failCount, int totalCount) {
 def reportTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
-    reportTestsToSlack failCount: testResultAction.failCount, totalCount: testResultAction.totalCount
-    // echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
+    echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
+
+    if (testResultAction.failCount > 0) {
+      echo '[LOG] reporting test failure'
+      sendSlackNotification "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
+    } else if (testResultAction.totalCount > 0) {
+      sendSlackNotification "All tests passed (out of ${testResultAction.totalCount})"
+      echo '[LOG] reporting test success'
+    }
   }
 }
 
