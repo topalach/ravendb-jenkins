@@ -35,7 +35,7 @@ def reportTestsToSlack(int failCount, int totalCount) {
 def reportTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
-    reportTestsToSlack failCount: testResultAction.failCount, totalCount: testResultAction.totalCount
+    reportTestsToSlack(failCount: testResultAction.failCount, totalCount: testResultAction.totalCount)
     // echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
   }
 }
