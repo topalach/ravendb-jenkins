@@ -42,8 +42,8 @@ pipeline {
     stage ('Tests') {
       steps {
         catchError {
-          nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
-          // nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
+          // nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
+          nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
         }
         
         printTestCounts()
