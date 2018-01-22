@@ -7,8 +7,8 @@ def reportTestCounts() {
     def slackMessage = ''
     def color = ''
 
-    echo '[LOG] last_test_totals: ${env.last_test_totals}'
-    echo '[LOG] testResultAction.totalCount: ${testResultAction.totalCount}'
+    echo "[LOG] last_test_totals: ${env.last_test_totals}"
+    echo "[LOG] testResultAction.totalCount: ${testResultAction.totalCount}"
 
     def totalCount = (int)testResultAction.totalCount - (int)env.last_test_totals
     env.last_test_totals = (int)testResultAction.totalCount
@@ -47,7 +47,7 @@ pipeline {
 
     stage ('First test stage') {
       steps {
-        echo '[LOG] Stage name: ${STAGE_NAME}'
+        echo "[LOG] Stage name: ${STAGE_NAME}"
         catchError {
           // nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
@@ -59,7 +59,7 @@ pipeline {
 
     stage ('Second test stage') {
       steps {
-        echo '[LOG] Stage name: ${STAGE_NAME}'
+        echo "[LOG] Stage name: ${STAGE_NAME}"
         catchError {
           nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
         }
