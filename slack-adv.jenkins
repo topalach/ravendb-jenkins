@@ -22,6 +22,12 @@ def reportTestCounts() {
   }
 }
 
+def reportStageFailure(int failedStageNum) {
+  script {
+    String[] stageNames = ['']
+  }
+}
+
 pipeline {
   agent {
     label 'windows || windows-slave'
@@ -29,8 +35,9 @@ pipeline {
 
   stages {
 
-    stage ('Tests') {
+    stage ('First test stage') {
       steps {
+        echo '[LOG] Stage name: ${STAGE_NAME}'
         catchError {
           // nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
@@ -38,20 +45,17 @@ pipeline {
         
         reportTestCounts()
       }
+    }
 
-      // post {
-      //   success {
-      //     sendSlackNotification 'All tests passed.'
-      //   }
-
-      //   failure {
-      //     sendSlackNotification 'Tests failed.'
-      //   }
-
-      //   aborted {
-      //     sendSlackNotification 'Tests were aborted.'
-      //   }
-      // }
+    stage ('Second test stage') {
+      steps {
+        echo '[LOG] Stage name: ${STAGE_NAME}'
+        catchError {
+          nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
+        }
+        
+        reportTestCounts()
+      }
     }
 
   }
