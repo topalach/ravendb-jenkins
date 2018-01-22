@@ -12,7 +12,7 @@ def sendSlackNotification(String slackMessage) {
       color = 'warning'
     }
 
-    slackSend color: color, message: "${env.JOB_NAME} ${env.BUILD_NUMBER} ${slackMessage} (<${env.BUILD_URL}|Open>)"
+    slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
   }
 }
 
@@ -42,7 +42,8 @@ pipeline {
     stage ('Tests') {
       steps {
         catchError {
-          nunit testResultsPattern: 'custom_files/testResults.xml', failIfNoResults: true
+          nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
+          // nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
         }
         
         printTestCounts()
