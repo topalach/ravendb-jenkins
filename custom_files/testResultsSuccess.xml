@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<test-results name="Test results" errors="0" inconclusive="0" ignored="0" invalid="0" not-run="0" date="2018-01-19" time="10:22:15" total="1591" failures="2" skipped="7">
+<test-results name="Test results" errors="0" inconclusive="0" ignored="0" invalid="0" not-run="0" date="2018-01-19" time="10:22:15" total="1591" skipped="7">
   <environment os-version="unknown" platform="unknown" cwd="unknown" machine-name="unknown" user="unknown" user-domain="unknown" nunit-version="xUnit.net 99.99.99.0" clr-version="64-bit .NET Standard [collection-per-class, non-parallel]" />
   <culture-info current-culture="unknown" current-uiculture="unknown" />
   <test-suite type="Assemblies" name="xUnit.net Tests" executed="True" success="True" result="Success" time="236.173">
@@ -2734,18 +2734,6 @@
           <test-suite type="TestCollection" executed="True" name="Test collection for FastTests.Client.BulkInsert.BulkInserts" result="Success" success="True" time="0.540">
             <results>
               <test-case name="FastTests.Client.BulkInsert.BulkInserts.KilledTooEarly" executed="True" result="Success" success="True" time="0.1418549">
-                <failure>
-                  <message>Assert.Throws() Failure\r\nExpected: typeof(Raven.Client.Exceptions.Documents.BulkInsert.BulkInsertAbortedException)\r\nActual:   typeof(System.AggregateException): One or more errors occurred. (Failed to execute bulk insert)</message>
-                  <stack-trace>   at Sparrow.Threading.DisposeOnceAsync`1.&lt;DisposeAsync&gt;d__3.MoveNext() in c:\jenkins\workspace\test pipeline\ravendb\src\Sparrow\Threading\DisposeOnce.cs:line 205
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-   at Raven.Client.Util.AsyncHelpers.RunSync(Func`1 task) in c:\jenkins\workspace\test pipeline\ravendb\src\Raven.Client\Util\AsyncHelpers.cs:line 77
-   at FastTests.Client.BulkInsert.BulkInserts.&lt;&lt;KilledTooEarly&gt;b__2_0&gt;d.MoveNext() in c:\jenkins\workspace\test pipeline\ravendb\test\FastTests\Client\BulkInsert\BulkInserts.cs:line 106
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)</stack-trace>
-                </failure>
               </test-case>
               <test-case name="FastTests.Client.BulkInsert.BulkInserts.ShouldNotAcceptIdsEndingWithPipeLine" executed="True" result="Success" success="True" time="0.0677364" />
               <test-case name="FastTests.Client.BulkInsert.BulkInserts.AsyncSimpleBulkInsertShouldWork" executed="True" result="Success" success="True" time="0.1292912" />
@@ -2871,19 +2859,6 @@
                 <properties>
                   <property name="Category" value="Cluster" />
                 </properties>
-                <failure>
-                  <message>Assert.Equal() Failure\r\nExpected: 5\r\nActual:   4</message>
-                  <stack-trace>   at FastTests.Server.Documents.Revisions.RevisionsReplication.&lt;WillDeleteOldRevisions&gt;d__3.MoveNext() in c:\jenkins\workspace\test pipeline\ravendb\test\FastTests\Server\Documents\Revisions\RevisionsReplication.cs:line 121
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
---- End of stack trace from previous location where exception was thrown ---
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)</stack-trace>
-                </failure>
               </test-case>
               <test-case name="FastTests.Server.Documents.Revisions.RevisionsReplication.GetRevisionsBinEntries(useSession: False)" executed="True" result="Success" success="True" time="0.532835">
                 <properties>
