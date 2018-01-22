@@ -7,12 +7,18 @@ def reportTestCounts() {
     def slackMessage = ''
     def color = ''
 
+    echo '[LOG] last_test_totals: ${env.last_test_totals}'
+    echo '[LOG] testResultAction.totalCount: ${testResultAction.totalCount}'
+
+    def totalCount = (int)testResultAction.totalCount - (int)env.last_test_totals
+    env.last_test_totals = (int)testResultAction.totalCount
+
     if (testResultAction.failCount > 0) {
       color = 'warning'
-      slackMessage = "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
-    } else if (testResultAction.totalCount > 0) {
+      slackMessage = "${testResultAction.failCount} test(s) failed (out of ${totalCount})"
+    } else if (totalCount > 0) {
       color = 'good'
-      slackMessage = "All tests passed (out of ${testResultAction.totalCount})"
+      slackMessage = "All tests passed (out of ${totalCount})"
     } else {
       color = 'danger'
       slackMessage = "No tests were run"
@@ -31,6 +37,10 @@ def reportStageFailure(int failedStageNum) {
 pipeline {
   agent {
     label 'windows || windows-slave'
+  }
+
+  environment {
+    last_test_totals = 0
   }
 
   stages {
