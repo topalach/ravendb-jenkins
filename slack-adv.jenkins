@@ -19,7 +19,7 @@ def reportToSlack(String message, String color) {
   slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${message} (<${env.BUILD_URL}|Open>)"
 }
 
-def reportTestsToSlack(Int failCount, Int totalCount) {
+def reportTestsToSlack(int failCount, int totalCount) {
     if (testResultAction.failCount > 0) {
       reportToSlack message: "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})", color: 'warning'
     } else if (testResultAction.totalCount > 0) {
