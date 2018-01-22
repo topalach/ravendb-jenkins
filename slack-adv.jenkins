@@ -3,8 +3,6 @@ import hudson.tasks.test.AbstractTestResultAction
 def sendSlackNotification(String slackMessage) {
   script {
     def color = 'danger'
-    echo "[LOG] currentBuild.result: ${currentBuild.result}"
-    echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
 
     if (currentBuild.currentResult == 'SUCCESS') {
       color = 'good'
@@ -16,19 +14,27 @@ def sendSlackNotification(String slackMessage) {
   }
 }
 
+//color: hex or good\danger\warning
+def reportToSlack(String message, String color) {
+  slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${message} (<${env.BUILD_URL}|Open>)"
+}
+
+def reportTestsToSlack(Int failCount, Int totalCount) {
+    if (testResultAction.failCount > 0) {
+      reportToSlack message: "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})", color: 'warning'
+    } else if (testResultAction.totalCount > 0) {
+      reportToSlack message: "All tests passed (out of ${testResultAction.totalCount})", color: 'good'
+    } else {
+      reportToSlack message: 'No tests run', color: 'danger'
+    }
+}
+
 @NonCPS
-def printTestCounts() {
+def reportTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
-    echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
-
-    if (testResultAction.failCount > 0) {
-      echo '[LOG] reporting test failure'
-      sendSlackNotification "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
-    } else if (testResultAction.totalCount > 0) {
-      sendSlackNotification "All tests passed (out of ${testResultAction.totalCount})"
-      echo '[LOG] reporting test success'
-    }
+    reportTestsToSlack failCount: testResultAction.failCount, totalCount: testResultAction.totalCount
+    // echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
   }
 }
 
@@ -46,7 +52,7 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
         }
         
-        printTestCounts()
+        reportTestCounts()
       }
 
       // post {
