@@ -21,6 +21,14 @@ def printTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
     echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
+
+    if (testResultAction.failCount > 0) {
+      echo '[LOG] reporting test failure'
+      sendSlackNotification "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
+    } else if (testResultAction.totalCount > 0) {
+      sendSlackNotification "All tests passed (out of ${testResultAction.totalCount})"
+      echo '[LOG] reporting test success'
+    }
   }
 }
 
