@@ -21,9 +21,9 @@ def reportToSlack(String message, String color) {
 
 def reportTestsToSlack(int failCount, int totalCount) {
   script {
-    if (testResultAction.failCount > 0) {
+    if (failCount > 0) {
       reportToSlack message: "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})", color: 'warning'
-    } else if (testResultAction.totalCount > 0) {
+    } else if (totalCount > 0) {
       reportToSlack message: "All tests passed (out of ${testResultAction.totalCount})", color: 'good'
     } else {
       reportToSlack message: 'No tests run', color: 'danger'
