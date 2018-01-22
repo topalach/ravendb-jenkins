@@ -22,13 +22,20 @@ def reportTestCounts() {
       slackMessage = "No tests were run"
     }
 
-    slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
+    //slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
+
+    def slackSummary = ''
   }
 }
 
-def reportStageFailure(int failedStageNum) {
+def storeStageResult() {
   script {
-    String[] stageNames = ['']
+    def resultPrefix = '-'
+    if (stage_success) {
+      resultPrefix = '+'
+    }
+
+    result_summary = "${result_summary}\n${resultPrefix} ${STAGE_NAME}"
   }
 }
 
@@ -45,38 +52,68 @@ pipeline {
 
     stage ('First test stage') {
       steps {
+        script {
+          stage_success = false
+          result_summary = ""
+        }
+
         echo "[LOG] Stage name: ${STAGE_NAME}"
-        echo "[LOG] currentStage.result: ${currentStage.result}"
         catchError {
           // nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
+          script {
+            stage_success = true
+          }
         }
         
         reportTestCounts()
+
+        script {
+          storeStageResult()
+        }
       }
     }
 
     stage ('Second test stage') {
       steps {
+        script {
+          stage_success = false
+        }
+
         echo "[LOG] Stage name: ${STAGE_NAME}"
-        echo "[LOG] currentStage.result: ${currentStage.result}"
         catchError {
           nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
+          script {
+            stage_success = true
+          }
         }
         
         reportTestCounts()
+        script {
+          storeStageResult()
+        }
       }
     }
 
     stage ('Third test stage') {
       steps {
+        script {
+          stage_success = false
+        }
+
         echo "[LOG] Stage name: ${STAGE_NAME}"
-        echo "[LOG] currentStage.result: ${currentStage.result}"
         catchError {
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
+          script {
+            stage_success = true
+          }
         }
         
         reportTestCounts()
+        script {
+          storeStageResult()
+          echo "${result_summary}"
+        }
       }
     }
 
