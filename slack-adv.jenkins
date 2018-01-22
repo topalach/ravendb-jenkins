@@ -1,18 +1,18 @@
 import hudson.tasks.test.AbstractTestResultAction
 
-def sendSlackNotification(String slackMessage) {
-  script {
-    def color = 'danger'
+// def sendSlackNotification(String slackMessage) {
+//   script {
+//     def color = 'danger'
 
-    if (currentBuild.currentResult == 'SUCCESS') {
-      color = 'good'
-    } else if (currentBuild.currentResult == 'FAILURE') {
-      color = 'warning'
-    }
+//     if (currentBuild.currentResult == 'SUCCESS') {
+//       color = 'good'
+//     } else if (currentBuild.currentResult == 'FAILURE') {
+//       color = 'warning'
+//     }
 
-    slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
-  }
-}
+//     slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
+//   }
+// }
 
 //color: hex or good\danger\warning
 def reportToSlack(String message, String color) {
@@ -20,6 +20,7 @@ def reportToSlack(String message, String color) {
 }
 
 def reportTestsToSlack(int failCount, int totalCount) {
+  script {
     if (testResultAction.failCount > 0) {
       reportToSlack message: "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})", color: 'warning'
     } else if (testResultAction.totalCount > 0) {
@@ -27,6 +28,7 @@ def reportTestsToSlack(int failCount, int totalCount) {
     } else {
       reportToSlack message: 'No tests run', color: 'danger'
     }
+  }
 }
 
 @NonCPS
