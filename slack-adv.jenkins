@@ -1,5 +1,21 @@
 import hudson.tasks.test.AbstractTestResultAction
 
+// def sendSlackNotification(String slackMessage) {
+//   script {
+//     def color = 'danger'
+//     echo "[LOG] currentBuild.result: ${currentBuild.result}"
+//     echo "[LOG] currentBuild.currentResult: ${currentBuild.currentResult}"
+
+//     if (currentBuild.currentResult == 'SUCCESS') {
+//       color = 'good'
+//     } else if (currentBuild.currentResult == 'FAILURE') {
+//       color = 'warning'
+//     }
+
+//     slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
+//   }
+// }
+
 def sendSlackNotification(String slackMessage) {
   script {
     def color = 'danger'
@@ -20,14 +36,12 @@ def sendSlackNotification(String slackMessage) {
 def reportTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
-    echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
-
     if (testResultAction.failCount > 0) {
-      echo '[LOG] reporting test failure'
       sendSlackNotification "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
     } else if (testResultAction.totalCount > 0) {
       sendSlackNotification "All tests passed (out of ${testResultAction.totalCount})"
-      echo '[LOG] reporting test success'
+    } else {
+      sendSlackNotification "No tests were run"
     }
   }
 }
