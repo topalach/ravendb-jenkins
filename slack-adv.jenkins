@@ -22,9 +22,9 @@ def reportToSlack(String message, String color) {
 def reportTestsToSlack(int failCount, int totalCount) {
   script {
     if (failCount > 0) {
-      reportToSlack message: "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})", color: 'warning'
+      reportToSlack message: "${failCount} test(s) failed (out of ${totalCount})", color: 'warning'
     } else if (totalCount > 0) {
-      reportToSlack message: "All tests passed (out of ${testResultAction.totalCount})", color: 'good'
+      reportToSlack message: "All tests passed (${totalCount} run)", color: 'good'
     } else {
       reportToSlack message: 'No tests run', color: 'danger'
     }
@@ -35,7 +35,7 @@ def reportTestsToSlack(int failCount, int totalCount) {
 def reportTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
-    reportTestsToSlack(failCount: testResultAction.failCount, totalCount: testResultAction.totalCount)
+    reportTestsToSlack failCount: testResultAction.failCount, totalCount: testResultAction.totalCount
     // echo "[LOG] Tests: ${testResultAction.failCount} / ${testResultAction.failureDiffString} failures of ${testResultAction.totalCount}.\n\n" 
   }
 }
