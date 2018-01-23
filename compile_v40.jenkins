@@ -16,6 +16,7 @@ pipeline {
 
   options {
     timeout(time: 5, unit: 'HOURS')
+    timestamps()
   }
 
   environment {
@@ -63,15 +64,15 @@ pipeline {
 
   post {
     success {
-      commentPullRequest("tests", "Compilation succeeded.", "SUCCESS")
+      commentPullRequest("build", "Compilation succeeded.", "SUCCESS")
     }
 
     failure {
-      commentPullRequest("tests", "Compilation failed.", "FAILED")
+      commentPullRequest("build", "Compilation failed.", "FAILED")
     }
 
     aborted {
-      commentPullRequest("tests", "Compilation was aborted.", "FAILED")
+      commentPullRequest("build", "Compilation was aborted.", "FAILED")
     }
   }
 
