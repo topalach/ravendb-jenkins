@@ -12,10 +12,18 @@ pipeline {
 
   stages {
 
+    stage ('Pre') {
+      steps {
+        git url: 'https://github.com/topalach/ravendb-jenkins.git', branch: 'v4.0', poll: false
+      }
+    }
+
     stage ('Clone') {
       steps {
         echo '[LOG] started cloning repo'
-        git url: 'https://github.com/topalach/ravendb.git', branch: 'v4.0-jenkins-prtest10', poll: true
+        dir ('s') {
+          git url: 'https://github.com/topalach/ravendb.git', branch: 'v4.0-jenkins-prtest10', poll: true
+        }
         echo '[LOG] finished cloning repo'
       }
     }
