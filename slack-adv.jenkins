@@ -36,10 +36,10 @@ def reportTotalTestCounts() {
 
     if (testResultAction.failCount > 0) {
       color = 'danger'
-      slackMessage = "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
+      slackMessage = "\u274C ${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
     } else if (testResultAction.totalCount > 0) {
       color = 'good'
-      slackMessage = "All tests passed (out of ${testResultAction.totalCount})"
+      slackMessage = "\u2714 All tests passed (out of ${testResultAction.totalCount})"
     } else {
       color = 'warning'
       slackMessage = "No tests were run"
@@ -86,7 +86,7 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
         }
 
-        reportTestsIfFailed()
+        // reportTestsIfFailed()
       }
     }
 
@@ -96,7 +96,7 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
         }
 
-        reportTestsIfFailed()
+        // reportTestsIfFailed()
       }
     }
 
