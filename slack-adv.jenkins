@@ -28,15 +28,24 @@ def reportTestCounts() {
   }
 }
 
-def storeStageResult() {
-  script {
-    def resultPrefix = '-'
-    if (stage_success) {
-      resultPrefix = '+'
-    }
+// def storeStageResult() {
+//   script {
+//     def resultPrefix = '-'
+//     if (stage_success) {
+//       resultPrefix = '+'
+//     }
 
-    result_summary = "${result_summary}\n${resultPrefix} ${STAGE_NAME}"
+//     result_summary = "${result_summary}\n${resultPrefix} ${STAGE_NAME}"
+//   }
+// }
+
+def getStageSummary(Boolean succeeded, String stageName) {
+  def resultPrefix = '-'
+  if (succeeded) {
+    resultPrefix = '+'
   }
+
+  return "${resultPrefix} ${stageName}"
 }
 
 pipeline {
@@ -55,6 +64,7 @@ pipeline {
         script {
           stage_success = false
           result_summary = ""
+          stage_1_success = false
         }
 
         echo "[LOG] Stage name: ${STAGE_NAME}"
@@ -63,14 +73,15 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
           script {
             stage_success = true
+            stage_1_success = true
           }
         }
         
         reportTestCounts()
 
-        script {
-          storeStageResult()
-        }
+        // script {
+        //   storeStageResult()
+        // }
       }
     }
 
@@ -78,6 +89,7 @@ pipeline {
       steps {
         script {
           stage_success = false
+          stage_2_success = false
         }
 
         echo "[LOG] Stage name: ${STAGE_NAME}"
@@ -85,13 +97,14 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
           script {
             stage_success = true
+            stage_2_success = true
           }
         }
         
         reportTestCounts()
-        script {
-          storeStageResult()
-        }
+        // script {
+        //   storeStageResult()
+        // }
       }
     }
 
@@ -99,6 +112,7 @@ pipeline {
       steps {
         script {
           stage_success = false
+          stage_3_success = true
         }
 
         echo "[LOG] Stage name: ${STAGE_NAME}"
@@ -106,13 +120,33 @@ pipeline {
           nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
           script {
             stage_success = true
+            stage_3_success = true
           }
         }
         
         reportTestCounts()
+        // script {
+        //   storeStageResult()
+        //   echo "${result_summary}"
+        // }
+      }
+    }
+
+    stage ('Report results') {
+      steps {
         script {
-          storeStageResult()
-          echo "${result_summary}"
+          def summary = ''
+          def stage_1_summary = getStageSummary(stage_1_success, "First stage")
+          def stage_2_summary = getStageSummary(stage_2_success, "Second stage")
+          def stage_3_summary = getStageSummary(stage_3_success, "Third stage")
+          summary = "${stage_1_summary}\n${stage_2_summary}\n${stage_3_summary}"
+
+          def allSucceeded = stage_1_success && stage_2_success && stage_3_success
+
+          echo '[LOG] SUMMARY:'
+          echo "${summary}"
+
+          echo "[LOG] ALL SUCCEEDED: ${allSucceeded}"
         }
       }
     }
