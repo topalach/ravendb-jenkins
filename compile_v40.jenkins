@@ -1,0 +1,78 @@
+def commentPullRequest(String context, String message, String state) {
+  step([
+      $class: "GitHubCommitStatusSetter",
+      commitShaSource: [$class: "ManuallyEnteredShaSource", sha: env.ghprbActualCommit],
+      reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.ghprbAuthorRepoGitUrl],
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: context],
+      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "FAILED"]],
+      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+  ]);
+}
+
+pipeline {
+  agent {
+    label 'windows-slave'
+  }
+
+  options {
+    timeout(time: 5, unit: 'HOURS')
+  }
+
+  environment {
+    sourceDir = 's'
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        dir (env.sourceDir) {
+          git url: env.ghprbAuthorRepoGitUrl, branch: env.ghprbSourceBranch
+
+          //replace it with ps1 script usage
+          bat 'git clean -fxd'
+        }
+      }
+    }
+
+    stage ('Server') {
+      steps {
+        commentPullRequest("build", "Server build started", "PENDING")
+
+        dir (env.sourceDir) {
+          bat 'dotnet restore'
+          bat 'dotnet build'
+          commentPullRequest("build", "Server build succeeded. Started Studio build.", "PENDING")
+        }
+      }
+
+    }
+
+    stage ('Studio') {
+      steps {
+        dir ("${env.sourceDir}/src/Raven.Studio") {
+          bat 'dotnet restore'
+          bat 'dotnet build'
+          bat 'npm install'
+          bat 'npm run gulp restore+compile'
+        }
+      }
+    }
+
+    post {
+      success {
+        commentPullRequest("tests", "Compilation succeeded.", "SUCCESS")
+      }
+
+      failure {
+        commentPullRequest("tests", "Compilation failed.", "FAILED")
+      }
+
+      aborted {
+        commentPullRequest("tests", "Compilation was aborted.", "FAILED")
+      }
+    }
+
+  }
+
+}
