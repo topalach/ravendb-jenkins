@@ -59,20 +59,20 @@ pipeline {
       }
     }
 
-    post {
-      success {
-        commentPullRequest("tests", "Compilation succeeded.", "SUCCESS")
-      }
+  }
 
-      failure {
-        commentPullRequest("tests", "Compilation failed.", "FAILED")
-      }
-
-      aborted {
-        commentPullRequest("tests", "Compilation was aborted.", "FAILED")
-      }
+  post {
+    success {
+      commentPullRequest("tests", "Compilation succeeded.", "SUCCESS")
     }
 
+    failure {
+      commentPullRequest("tests", "Compilation failed.", "FAILED")
+    }
+
+    aborted {
+      commentPullRequest("tests", "Compilation was aborted.", "FAILED")
+    }
   }
 
 }
