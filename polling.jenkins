@@ -1,0 +1,24 @@
+pipeline {
+  agent any
+  //https://github.com/topalach/ravendb.git
+
+  triggers {
+    pollSCM "H/2 * * * *"
+  }
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        echo '[LOG] started cloning repo'
+        git url: 'https://github.com/topalach/ravendb.git', branch: 'v4.0-jenkins-prtest10', poll: true
+        echo '[LOG] finished cloning repo'
+      }
+    }
+
+  }
+}
