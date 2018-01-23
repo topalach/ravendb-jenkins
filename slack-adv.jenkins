@@ -1,43 +1,52 @@
 import hudson.tasks.test.AbstractTestResultAction
 import java.lang.Integer
 
+// @NonCPS
+// def reportTestCounts() {
+//   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
+//   if (testResultAction != null) {
+//     def slackMessage = ''
+//     def color = ''
+
+//     def totalCount = testResultAction.totalCount - (last_test_totals as Integer)
+//     last_test_totals = testResultAction.totalCount
+
+//     if (testResultAction.failCount > 0) {
+//       color = 'warning'
+//       slackMessage = "${testResultAction.failCount} test(s) failed (out of ${totalCount})"
+//     } else if (totalCount > 0) {
+//       color = 'good'
+//       slackMessage = "All tests passed (out of ${totalCount})"
+//     } else {
+//       color = 'danger'
+//       slackMessage = "No tests were run"
+//     }
+
+//     //slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
+//   }
+// }
+
 @NonCPS
-def reportTestCounts() {
+def reportTotalTestCounts() {
   AbstractTestResultAction testResultAction =  currentBuild.rawBuild.getAction(AbstractTestResultAction.class)
   if (testResultAction != null) {
     def slackMessage = ''
     def color = ''
 
-    def totalCount = testResultAction.totalCount - (last_test_totals as Integer)
-    last_test_totals = testResultAction.totalCount
-
     if (testResultAction.failCount > 0) {
-      color = 'warning'
-      slackMessage = "${testResultAction.failCount} test(s) failed (out of ${totalCount})"
-    } else if (totalCount > 0) {
-      color = 'good'
-      slackMessage = "All tests passed (out of ${totalCount})"
-    } else {
       color = 'danger'
+      slackMessage = "${testResultAction.failCount} test(s) failed (out of ${testResultAction.totalCount})"
+    } else if (testResultAction.totalCount > 0) {
+      color = 'good'
+      slackMessage = "All tests passed (out of ${testResultAction.totalCount})"
+    } else {
+      color = 'warning'
       slackMessage = "No tests were run"
     }
 
-    //slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
-
-    def slackSummary = ''
+    slackSend color: color, message: "${env.JOB_NAME} (#${env.BUILD_NUMBER}): ${slackMessage} (<${env.BUILD_URL}|Open>)"
   }
 }
-
-// def storeStageResult() {
-//   script {
-//     def resultPrefix = '-'
-//     if (stage_success) {
-//       resultPrefix = '+'
-//     }
-
-//     result_summary = "${result_summary}\n${resultPrefix} ${STAGE_NAME}"
-//   }
-// }
 
 def getStageSummary(Boolean succeeded, String stageName) {
   def resultPrefix = '-'
@@ -77,8 +86,7 @@ pipeline {
           }
         }
         
-        reportTestCounts()
-
+        // reportTestCounts()
         // script {
         //   storeStageResult()
         // }
@@ -101,7 +109,7 @@ pipeline {
           }
         }
         
-        reportTestCounts()
+        // reportTestCounts()
         // script {
         //   storeStageResult()
         // }
@@ -124,7 +132,7 @@ pipeline {
           }
         }
         
-        reportTestCounts()
+        // reportTestCounts()
         // script {
         //   storeStageResult()
         //   echo "${result_summary}"
@@ -148,6 +156,8 @@ pipeline {
 
           echo "[LOG] ALL SUCCEEDED: ${allSucceeded}"
         }
+
+        reportTotalTestCounts()
       }
     }
 
