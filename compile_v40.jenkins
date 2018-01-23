@@ -47,6 +47,12 @@ pipeline {
         }
       }
 
+      post {
+        failure {
+          commentPullRequest("build", "Server build failed.", "FAILED")
+        }
+      }
+
     }
 
     stage ('Studio') {
@@ -58,6 +64,12 @@ pipeline {
           bat 'npm run gulp restore+compile'
         }
       }
+
+      post {
+        failure {
+          commentPullRequest("build", "Studio build failed.", "FAILED")
+        }
+      }
     }
 
   }
@@ -65,10 +77,6 @@ pipeline {
   post {
     success {
       commentPullRequest("build", "Compilation succeeded.", "SUCCESS")
-    }
-
-    failure {
-      commentPullRequest("build", "Compilation failed.", "FAILED")
     }
 
     aborted {
