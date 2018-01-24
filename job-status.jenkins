@@ -1,7 +1,7 @@
 import groovy.json.JsonSlurper
 
 def getJobStatus(String jobName){
-  def rx = httpRequest "http://localhost:8080/job/${jobName}/lastBuild/api/json"
+  def rx = httpRequest url: "http://172.26.156.29:8080/job/${jobName}/lastBuild/api/json", authentication: 'jenkins-bot'
   //http://jenkins.hibernatingrhinos.com/job/PR_Conventions/lastBuild/api/json?pretty=true
   def rxJson = new JsonSlurper().parseText(rx.getContent())
   return rxJson['result']
