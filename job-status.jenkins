@@ -1,10 +1,21 @@
 import groovy.json.JsonSlurper
 
-def getJobStatus(String jobName){
+def getJobSummary(String jobName, String jobResult, String jobUrl) {
+  if (jobResult == "SUCCESS") {
+    return "\u2714 ${jobName} succeeded"
+  }
+  return "\u274C ${jobName} failed (<${jobUrl}|Jenkins>)"
+}
+
+def getJobStatusSummary(String jobName){
   def rx = httpRequest url: "http://172.26.156.29:8080/job/${jobName}/lastBuild/api/json", authentication: 'jenkins-bot'
-  //http://jenkins.hibernatingrhinos.com/job/PR_Conventions/lastBuild/api/json?pretty=true
   def rxJson = new JsonSlurper().parseText(rx.getContent())
-  return rxJson['result']
+
+  def result = rxJson['result']
+  def displayName = rxJson['fullDisplayName']
+  def url = rxJson['url']
+
+  return getJobSummary(displayName, result, url)
 }
 
 pipeline {
@@ -15,13 +26,13 @@ pipeline {
     stage('check'){
       steps {
         script {
+          totalSummary = ''
+
           ['slack_test', 'slack_test_advanced'].each {
-            jobStatus = getJobStatus(it)
-            echo jobStatus
-            if(jobStatus == "SUCCESS" || jobStatus == "UNSTABLE"){
-              any_success = true
-              break
-            }
+            jobSummary = getJobStatusSummary(it)
+            echo jobSummary
+
+            totalSummary = "${totalSummary}\n${jobSummary}"
           }
         }
       }
@@ -30,10 +41,7 @@ pipeline {
     stage('report') {
       steps {
         script {
-          if(!any_success){
-            //httpRequest 'https://jenkins.example.com/sounds/playSound?src=https://jenkins.example.com/userContent/sounds/dead.wav'
-            echo '[LOG] ALL JOBS FAILED!'
-          }
+          echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
         }
       }
     }
