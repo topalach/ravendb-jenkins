@@ -1,7 +1,7 @@
 import groovy.json.JsonSlurper
 
 def getJobStatus(String jobName){
-  def rx = httpRequest "http://jenkins.hibernatingrhinos.com/job/${jobName}/lastBuild/api/json"
+  def rx = httpRequest "http://localhost:8080/job/${jobName}/lastBuild/api/json"
   //http://jenkins.hibernatingrhinos.com/job/PR_Conventions/lastBuild/api/json?pretty=true
   def rxJson = new JsonSlurper().parseText(rx.getContent())
   return rxJson['result']
@@ -15,8 +15,8 @@ pipeline {
     stage('check'){
       steps {
         script {
-          for(jobname in ['PR_Conventions', 'AnotherJob']){
-            jobStatus = getJobStatus(jobName)
+          ['slack_test', 'slack_test_advanced'].each {
+            jobStatus = getJobStatus(it)
             echo jobStatus
             if(jobStatus == "SUCCESS" || jobStatus == "UNSTABLE"){
               any_success = true
@@ -32,7 +32,7 @@ pipeline {
         script {
           if(!any_success){
             //httpRequest 'https://jenkins.example.com/sounds/playSound?src=https://jenkins.example.com/userContent/sounds/dead.wav'
-            echo '[LOG] SOME JOBS FAILED!'
+            echo '[LOG] ALL JOBS FAILED!'
           }
         }
       }
