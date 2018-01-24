@@ -22,18 +22,14 @@ import java.lang.Integer
 //   return getJobSummary(displayName, result, url)
 // }
 
-def setTestSummaryForJob(String jobName, String jobDisplayName) {
+def getTestSummaryForJob(String jobName, String jobDisplayName) {
   script {
-    def message = ''
+    def response
 
     try {
-      def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
+      response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
     } catch(Exception e) {
-      message = "\u274C [${jobName}] No tests were recorded"
-      totalSummary = "${totalSummary}\n${message}"
-
-      echo "message"
-      return
+      return "\u274C [${jobName}] No tests were recorded"
     }
     
     def tests = new JsonSlurper().parseText(response.getContent())
@@ -42,15 +38,12 @@ def setTestSummaryForJob(String jobName, String jobDisplayName) {
     def skipCount = tests['skipCount'] as Integer
     def totalCount = failCount + passCount + skipCount
 
-    if (failCount > 0) {
-      message = "\u274C [${jobName}] Failed ${failCount}, Skipped ${skipCount}, Total: ${totalCount}"
-    } else {
-      message = "\u2714 [${jobName}] Skipped ${skipCount}, Total: ${totalCount}"
+    def prefix = "\u2714"
+    if (failCount > 0 || totalCount == 0) {
+      prefix = "\u274C"
     }
 
-    echo "[LOG] ${message}"
-
-    totalSummary = "${totalSummary}\n${message}"
+    return "${prefix} [${jobName}] Failed ${failCount}, Skipped ${skipCount}, Total: ${totalCount}"
   }
 }
 
@@ -70,11 +63,11 @@ pipeline {
           // jobsToCheck = ['slack_test', 'slack_test_advanced']
           totalSummary = 'Daily status summary:\n'
 
-          setTestSummaryForJob('report_success', 'First Test Suite')
-          setTestSummaryForJob('report_failed', 'Second Test Suite')
-          setTestSummaryForJob('slack_test', 'Second Test Suite')
+          first_summary = getTestSummaryForJob('report_success', 'First Test Suite')
+          second_summary = getTestSummaryForJob('report_failed', 'Second Test Suite')
+          third_summary = getTestSummaryForJob('slack_test', 'Second Test Suite')
 
-          echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
+          echo "[LOG] TOTAL SUMMARY:\n${first_summary}\n${second_summary}\n${third_summary}"
 
           // anyFailed = false
 
