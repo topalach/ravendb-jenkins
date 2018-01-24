@@ -3,17 +3,20 @@ import groovy.json.JsonSlurper
 def getJobSummary(String jobName, String jobResult, String jobUrl) {
   if (jobResult == "SUCCESS") {
     return "\u2714 ${jobName} succeeded"
+  } else {
+    anyFailed = true
   }
+
   return "\u274C ${jobName} failed (<${jobUrl}|Jenkins>)"
 }
 
 def getJobStatusSummary(String jobName){
-  def rx = httpRequest url: "http://172.26.156.29:8080/job/${jobName}/lastBuild/api/json", authentication: 'jenkins-bot'
-  def rxJson = new JsonSlurper().parseText(rx.getContent())
+  def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastBuild/api/json", authentication: env.credentialsId
+  def json = new JsonSlurper().parseText(response.getContent())
 
-  def result = rxJson['result']
-  def displayName = rxJson['fullDisplayName']
-  def url = rxJson['url']
+  def result = json['result']
+  def displayName = json['fullDisplayName']
+  def url = json['url']
 
   return getJobSummary(displayName, result, url)
 }
@@ -21,14 +24,22 @@ def getJobStatusSummary(String jobName){
 pipeline {
   agent any
 
+  environment {
+    serverAddress = "http://172.26.156.29:8080"
+    credentialsId = 'jenkins-bot'
+  }
+
   stages {
 
     stage('check'){
       steps {
         script {
-          totalSummary = ''
+          jobsToCheck = ['slack_test', 'slack_test_advanced']
 
-          ['slack_test', 'slack_test_advanced'].each {
+          totalSummary = 'Daily status summary:\n'
+          anyFailed = false
+
+          jobsToCheck.each {
             jobSummary = getJobStatusSummary(it)
             echo jobSummary
 
@@ -42,6 +53,13 @@ pipeline {
       steps {
         script {
           echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
+
+          def color = 'good'
+          if (anyFailed) {
+            color = 'danger'
+          }
+
+          slackSend color: color, message: totalSummary
         }
       }
     }
