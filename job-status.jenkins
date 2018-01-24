@@ -24,12 +24,16 @@ import java.lang.Integer
 
 def getTestSummaryForJob(String jobName, String jobDisplayName) {
   script {
+    def prefix_success = "\u2714"
+    def prefix_fail = "\u274C"
+    def no_tests_message = "${prefix_fail} [${jobName}]\tNo tests were recorded"
+
     def response
 
     try {
       response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
     } catch(Exception e) {
-      return "\u274C [${jobName}] No tests were recorded"
+      return no_tests_message
     }
     
     def tests = new JsonSlurper().parseText(response.getContent())
@@ -38,12 +42,16 @@ def getTestSummaryForJob(String jobName, String jobDisplayName) {
     def skipCount = tests['skipCount'] as Integer
     def totalCount = failCount + passCount + skipCount
 
-    def prefix = "\u2714"
-    if (failCount > 0 || totalCount == 0) {
-      prefix = "\u274C"
+    if (totalCount == 0) {
+      return no_tests_message
     }
 
-    return "${prefix} [${jobName}] Failed ${failCount}, Skipped ${skipCount}, Total: ${totalCount}"
+    def prefix = prefix_success
+    if (failCount > 0) {
+      prefix = prefix_fail
+    }
+
+    return "${prefix} [${jobName}]\tFailed ${failCount}\tSkipped ${skipCount}\tTotal ${totalCount}"
   }
 }
 
@@ -67,7 +75,8 @@ pipeline {
           second_summary = getTestSummaryForJob('report_failed', 'Second Test Suite')
           third_summary = getTestSummaryForJob('slack_test', 'Second Test Suite')
 
-          echo "[LOG] TOTAL SUMMARY:\n${first_summary}\n${second_summary}\n${third_summary}"
+          totalSummary = "Daily status summary:\n${first_summary}\n${second_summary}\n${third_summary}"
+          echo totalSummary
 
           // anyFailed = false
 
