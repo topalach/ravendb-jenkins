@@ -28,7 +28,7 @@ def setTestSummaryForJob(String jobName, String jobDisplayName) {
 
     try {
       def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
-    } catch {
+    } catch(Exception e) {
       message = "\u274C [${jobName}] No tests were recorded"
       totalSummary = "${totalSummary}\n${message}"
 
