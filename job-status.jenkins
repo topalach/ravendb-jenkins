@@ -54,6 +54,7 @@ pipeline {
 
           setTestSummaryForJob('report_success', 'First Test Suite')
           setTestSummaryForJob('report_failed', 'Second Test Suite')
+          setTestSummaryForJob('slack_test', 'Second Test Suite')
 
           // anyFailed = false
 
@@ -67,19 +68,20 @@ pipeline {
       }
     }
 
-    stage('report') {
-      steps {
-        script {
-          // echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
+    // stage('report') {
+    //   steps {
+    //     script {
+    //       echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
 
-          // def color = 'good'
-          // if (anyFailed) {
-          //   color = 'danger'
-          // }
+    //       def color = 'good'
+    //       if (anyFailed) {
+    //         color = 'danger'
+    //       }
 
-          //slackSend color: color, message: totalSummary
-        }
-      }
-    }
+    //       slackSend color: color, message: totalSummary
+    //     }
+    //   }
+    // }
+
   }
 }
