@@ -22,7 +22,11 @@ import java.lang.Integer
 //   return getJobSummary(displayName, result, url)
 // }
 
-def getTestSummaryForJob(String jobName, String jobDisplayName) {
+def appendToSummary(String message) {
+  totalSummary = "${totalSummary}\n${message}"
+}
+
+def setTestSummaryForJob(String jobName, String jobDisplayName) {
   script {
     def prefix_success = "\u2714"
     def prefix_fail = "\u274C"
@@ -33,7 +37,9 @@ def getTestSummaryForJob(String jobName, String jobDisplayName) {
     try {
       response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
     } catch(Exception e) {
-      return no_tests_message
+      anyFailed = true
+      appendToSummary(no_tests_message)
+      return
     }
     
     def tests = new JsonSlurper().parseText(response.getContent())
@@ -43,15 +49,18 @@ def getTestSummaryForJob(String jobName, String jobDisplayName) {
     def totalCount = failCount + passCount + skipCount
 
     if (totalCount == 0) {
-      return no_tests_message
+      anyFailed = true
+      appendToSummary(no_tests_message)
+      return
     }
 
     def prefix = prefix_success
     if (failCount > 0) {
+      anyFailed = true
       prefix = prefix_fail
     }
 
-    return "${prefix} [${jobName}]\tFailed ${failCount}\tSkipped ${skipCount}\tTotal ${totalCount}"
+    appendToSummary("${prefix} [${jobName}]\tFailed ${failCount}\tSkipped ${skipCount}\tTotal ${totalCount}")
   }
 }
 
@@ -69,16 +78,12 @@ pipeline {
       steps {
         script {
           // jobsToCheck = ['slack_test', 'slack_test_advanced']
-          totalSummary = 'Daily status summary:\n'
+          anyFailed = false
+          totalSummary = 'Daily status summary:'
 
-          first_summary = getTestSummaryForJob('report_success', 'First Test Suite')
-          second_summary = getTestSummaryForJob('report_failed', 'Second Test Suite')
-          third_summary = getTestSummaryForJob('slack_test', 'Second Test Suite')
-
-          totalSummary = "Daily status summary:\n${first_summary}\n${second_summary}\n${third_summary}"
-          echo totalSummary
-
-          // anyFailed = false
+          setTestSummaryForJob('report_success', 'First Test Suite')
+          setTestSummaryForJob('report_failed', 'Second Test Suite')
+          setTestSummaryForJob('slack_test', 'Second Test Suite')
 
           // jobsToCheck.each {
           //   jobSummary = getJobStatusSummary(it)
@@ -90,20 +95,20 @@ pipeline {
       }
     }
 
-    // stage('report') {
-    //   steps {
-    //     script {
-    //       echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
+    stage('report') {
+      steps {
+        script {
+          echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
 
-    //       def color = 'good'
-    //       if (anyFailed) {
-    //         color = 'danger'
-    //       }
+          def color = 'good'
+          if (anyFailed) {
+            color = 'danger'
+          }
 
-    //       slackSend color: color, message: totalSummary
-    //     }
-    //   }
-    // }
+          slackSend color: color, message: totalSummary
+        }
+      }
+    }
 
   }
 }
