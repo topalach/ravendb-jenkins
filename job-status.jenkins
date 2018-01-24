@@ -1,14 +1,15 @@
 import groovy.json.JsonSlurper
+import java.lang.Integer
 
-def getJobSummary(String jobName, String jobResult, String jobUrl) {
-  if (jobResult == "SUCCESS") {
-    return "\u2714 ${jobName} succeeded"
-  } else {
-    anyFailed = true
-  }
+// def getJobSummary(String jobName, String jobResult, String jobUrl) {
+//   if (jobResult == "SUCCESS") {
+//     return "\u2714 ${jobName} succeeded"
+//   } else {
+//     anyFailed = true
+//   }
 
-  return "\u274C ${jobName} failed (<${jobUrl}|Jenkins>)"
-}
+//   return "\u274C ${jobName} failed (<${jobUrl}|Jenkins>)"
+// }
 
 // def getJobStatusSummary(String jobName){
 //   def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastBuild/api/json", authentication: env.credentialsId
@@ -22,18 +23,35 @@ def getJobSummary(String jobName, String jobResult, String jobUrl) {
 // }
 
 def setTestSummaryForJob(String jobName, String jobDisplayName) {
-  def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
-  def tests = new JsonSlurper().parseText(response.getContent())
+  script {
+    def message = ''
 
-  def result = tests['result']
-  def failCount = tests['failCount']
-  def passCount = tests['passCount']
-  def skipCount = tests['skipCount']
+    try {
+      def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
+    } catch {
+      message = "\u274C [${jobName}] No tests were recorded"
+      totalSummary = "${totalSummary}\n${message}"
 
-  def message = "[${jobName}] result: ${result}; failCount: ${failCount}; passCount: ${passCount}; skipCount: ${skipCount}"
-  echo "[LOG] ${message}"
+      echo "message"
+      return
+    }
+    
+    def tests = new JsonSlurper().parseText(response.getContent())
+    def failCount = tests['failCount'] as Integer
+    def passCount = tests['passCount'] as Integer
+    def skipCount = tests['skipCount'] as Integer
+    def totalCount = failCount + passCount + skipCount
 
-  totalSummary = "${totalSummary}\n${message}"
+    if (failCount > 0) {
+      message = "\u274C [${jobName}] Failed ${failCount}, Skipped ${skipCount}, Total: ${totalCount}"
+    } else {
+      message = "\u2714 [${jobName}] Skipped ${skipCount}, Total: ${totalCount}"
+    }
+
+    echo "[LOG] ${message}"
+
+    totalSummary = "${totalSummary}\n${message}"
+  }
 }
 
 pipeline {
@@ -55,6 +73,8 @@ pipeline {
           setTestSummaryForJob('report_success', 'First Test Suite')
           setTestSummaryForJob('report_failed', 'Second Test Suite')
           setTestSummaryForJob('slack_test', 'Second Test Suite')
+
+          echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
 
           // anyFailed = false
 
