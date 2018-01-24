@@ -1,0 +1,13 @@
+pipeline {
+  agent any
+
+  stages {
+
+    stage ('Report tests') {
+      steps {
+        nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
+      }
+    }
+
+  }
+}
