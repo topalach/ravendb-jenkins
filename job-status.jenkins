@@ -1,29 +1,8 @@
 import groovy.json.JsonSlurper
 import java.lang.Integer
 
-// def getJobSummary(String jobName, String jobResult, String jobUrl) {
-//   if (jobResult == "SUCCESS") {
-//     return "\u2714 ${jobName} succeeded"
-//   } else {
-//     anyFailed = true
-//   }
-
-//   return "\u274C ${jobName} failed (<${jobUrl}|Jenkins>)"
-// }
-
-// def getJobStatusSummary(String jobName){
-//   def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastBuild/api/json", authentication: env.credentialsId
-//   def json = new JsonSlurper().parseText(response.getContent())
-
-//   def result = json['result']
-//   def displayName = json['fullDisplayName']
-//   def url = json['url']
-
-//   return getJobSummary(displayName, result, url)
-// }
-
 def appendToSlackMessage(String jobDisplayName, String summary, String color) {
-  slackAttachments = "${slackAttachments},{ \"color\": \"${color}\", \"fields\": [ {\"value\":\"${jobDisplayName}\",\"short\": true}, {\"value\":\"${summary}\"}] }"
+  slackAttachments = "${slackAttachments},{\"color\":\"${color}\", \"fields\": [ {\"value\":\"${jobDisplayName}\",\"short\": true}, {\"value\":\"${summary}\"}] }"
 }
 
 def addSlackMessageForNoTests(String jobDisplayName) {
@@ -42,23 +21,13 @@ def getTestSummary(Integer failCount, Integer skipCount, Integer totalCount) {
   return "Failed ${failCount}\tSkipped ${skipCount}\tTotal ${totalCount}"
 }
 
-def appendToSummary(String message) {
-  totalSummary = "${totalSummary}\n${message}"
-}
-
-def setTestSummaryForJob(String jobName, String jobDisplayName) {
+def setSlackMessageForJob(String jobName, String jobDisplayName) {
   script {
-    def prefix_success = "\u2714"
-    def prefix_fail = "\u274C"
-    def no_tests_message = "${prefix_fail} [${jobName}]\tNo tests were recorded"
-
     def response
 
     try {
       response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json", authentication: env.credentialsId
     } catch(Exception e) {
-      anyFailed = true
-      appendToSummary(no_tests_message)
       addSlackMessageForNoTests(jobDisplayName)
       return
     }
@@ -70,24 +39,17 @@ def setTestSummaryForJob(String jobName, String jobDisplayName) {
     def totalCount = failCount + passCount + skipCount
 
     if (totalCount == 0) {
-      anyFailed = true
-      appendToSummary(no_tests_message)
       addSlackMessageForNoTests(jobDisplayName)
       return
     }
 
     def testSummary = getTestSummary(failCount, skipCount, totalCount)
 
-    def prefix = prefix_success
     if (failCount > 0) {
-      anyFailed = true
-      prefix = prefix_fail
       addSlackMessageForTestFail(jobDisplayName, testSummary)
     } else {
       addSlackMessageForTestSuccess(jobDisplayName, testSummary)
     }
-
-    appendToSummary("${prefix} [${jobName}]\tFailed ${failCount}\tSkipped ${skipCount}\tTotal ${totalCount}")
   }
 }
 
@@ -104,87 +66,18 @@ pipeline {
     stage('check'){
       steps {
         script {
-          // jobsToCheck = ['slack_test', 'slack_test_advanced']
-          anyFailed = false
-          totalSummary = 'Daily status summary:'
           slackAttachments = ''
 
-          setTestSummaryForJob('report_success', 'First Test Suite')
-          setTestSummaryForJob('report_failed', 'Second Test Suite')
-          setTestSummaryForJob('slack_test', 'Second Test Suite')
-
-          // jobsToCheck.each {
-          //   jobSummary = getJobStatusSummary(it)
-          //   echo jobSummary
-
-          //   totalSummary = "${totalSummary}\n${jobSummary}"
-          // }
+          setSlackMessageForJob('report_success', 'First Test Suite')
+          setSlackMessageForJob('report_failed', 'Second Test Suite')
+          setSlackMessageForJob('slack_test', 'Third Test Suite')
         }
       }
     }
 
     stage('report') {
       steps {
-        script {
-          echo "[LOG] TOTAL SUMMARY:\n${totalSummary}"
-
-          def color = 'good'
-          if (anyFailed) {
-            color = 'danger'
-          }
-
-          //slackSend color: color, message: totalSummary
-          slackSend message: "Daily status summary", attachments: "[${slackAttachments}]"
-
-//           slackSend message: "Daily status summary", attachments: '''[{
-//     "color": "good",
-//     "fields": [
-//     {
-//         "value": "v3.0",
-//         "short": true
-//     },
-//     {
-//         "value": "Failed: 0\tSkipped: 3455\tTotal: 939"
-//     }
-//     ]
-// },
-// {
-//     "color": "good",
-//     "fields": [
-//         {
-//             "value": "v4.0 [windows x64]",
-//             "short": true
-//         },
-//         {
-//             "value": "Failed: 0\tSkipped: 35\tTotal: 93339"
-//         }
-//     ]
-// },
-// {
-//     "color": "danger",
-//     "fields": [
-//     {
-//         "value": "v4.0 [ubuntu 16.04 x64]",
-//         "short": true
-//     },
-//     {
-//         "value": "Failed: 150\tSkipped: 0\tTotal: 93339"
-//     }
-//     ]
-// },
-// {
-//     "color": "warning",
-//     "fields": [
-//     {
-//         "value": "v4.0 [windows x86]",
-//         "short": true
-//     },
-//     {
-//         "value": "No tests were recorded"
-//     }
-//     ]
-// }]'''
-        }
+        slackSend message: "Daily status summary", attachments: "[${slackAttachments}]"
       }
     }
 
