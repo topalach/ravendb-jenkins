@@ -1,9 +1,8 @@
 pipeline {
   agent any
-  //https://github.com/topalach/ravendb.git
 
   triggers {
-    pollSCM "H/2 * * * *"
+    pollSCM "* * * * *"
   }
 
   options {
@@ -11,12 +10,6 @@ pipeline {
   }
 
   stages {
-
-    stage ('Pre') {
-      steps {
-        git url: 'https://github.com/topalach/ravendb-jenkins.git', branch: 'v4.0', poll: false
-      }
-    }
 
     stage ('Clone') {
       steps {
