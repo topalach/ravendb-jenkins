@@ -17,7 +17,7 @@ def sendSlackNotification(String slackMessage) {
 pipeline {
   agent any
 
-  //ignore me - testing polling
+  //ignore me - testing polling #2
 
   stages {
 
