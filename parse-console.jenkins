@@ -1,0 +1,47 @@
+def isTextInConsoleOutput(String textToFind) {
+  script {
+    //def response = httpRequest url: "${env.BUILD_URL}/consoleText", authentication: env.credentialsId
+    def response = httpRequest url: "http://172.26.156.24:8080/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/consoleText", authentication: env.credentialsId
+    def consoleText = response.getContent()
+
+    echo "[SUPER LOG] CONSOLE OUTPUT:\n${consoleText}"
+    echo "[SUPER LOG] --------------"
+
+    return consoleText.contains(textToFind)
+  }
+}
+
+pipeline {
+  agent any
+
+  environment {
+    credentialsId = 'jenkins-bot'
+  }
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage ('Write to console') {
+      steps {
+        echo '[LOG] started doing something'
+        echo 'some unimportant text here'
+        echo 'wondering if you can find me here'
+        echo 'among other logs'
+        echo '[LOG] finished doing something'
+      }
+    }
+
+    stage ('Parse output') {
+      steps {
+        script {
+          def foundText = isTextInConsoleOutput('you can')
+          echo "[LOG] FOUND TEXT?: ${foundText}"
+        }
+      }
+    }
+
+  }
+}
