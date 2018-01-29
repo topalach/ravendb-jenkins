@@ -1,4 +1,5 @@
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import java.lang.Integer
 // import jenkins.model.CauseOfInterruption
 
 def interruptAwareBat(String command) {
@@ -39,6 +40,33 @@ def interruptAwareSh(String command) {
   }
 }
 
+def retryBat(String command, Integer times) {
+  script {
+    def i = 0
+    def run_again = true
+
+    while (i < times && run_again) {
+      i++
+      try {
+        bat command
+        run_again = false
+      } catch (FlowInterruptedException e) {
+        throw e // rethrowing will cause the pipeline to stop
+      } catch (hudson.AbortException ae) {
+        if (ae.getMessage().contains('script returned exit code -1')) {
+          throw ae
+        }
+      } catch (Exception e) {
+        echo "[LOG] encountered ${e.toString()}"
+      }
+    }
+
+    if (run_again) {
+      error("Bat retry failed.")
+    }
+  }
+}
+
 pipeline {
   agent {
     label 'windows-slave'
@@ -55,10 +83,8 @@ pipeline {
     stage ('Do Something') {
       steps {
         // interruptAwareBat 'powershell -c "Start-Sleep -s 180"'
-        retry (5) {
-          bat 'powershell -c "Start-Sleep -s 180"'
-          // interruptAwareSh 'pwsh -c "Start-Sleep -s 180"'
-        }
+
+        retryBat('powershell -c "Start-Sleep -s 10"', 5)
         // interruptAwareBat 'kskljsdlkfsdkjlflkjdsf'
         // interruptAwareSh 'skjdaskjdkasdaskjd'
         
