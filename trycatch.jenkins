@@ -1,8 +1,49 @@
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
-import jenkins.model.CauseOfInterruption
+// import jenkins.model.CauseOfInterruption
+
+def interruptAwareBat(String command) {
+  script {
+    try {
+      bat command
+    } catch (FlowInterruptedException e) {
+      echo "[LOG] encountered ${e.toString()}"
+      throw e // rethrowing will cause the pipeline to stop
+    } catch (hudson.AbortException ae) {
+      echo "[LOG] encountered ${e.toString()}"
+
+      if (ae.getMessage().contains('script returned exit code -1')) {
+        throw ae
+      }
+    } catch (Exception e) {
+      echo "[LOG] encountered ${e.toString()}"
+    }
+  }
+}
+
+def interruptAwareSh(String command) {
+  script {
+    try {
+      sh command
+    } catch (FlowInterruptedException e) {
+      echo "[LOG] encountered FlowInterruptedException"
+      throw e // rethrowing will cause the pipeline to stop
+    } catch (hudson.AbortException ae) {
+      echo "[LOG] encountered AbortException"
+      echo "[LOG] AbortException message: ${ae.getMessage()}"
+
+      if (ae.getMessage().contains('script returned exit code 143')) {
+        echo "[LOG] script was aborted"
+        throw ae
+      }
+    }
+  }
+}
 
 pipeline {
-  agent any
+  agent {
+    label 'windows-slave'
+    // label 'linux'
+  }
 
   options {
     timestamps()
@@ -13,36 +54,44 @@ pipeline {
 
     stage ('Do Something') {
       steps {
-        script {
-          try {
-            // echo "[LOG] this will definitely fail"
-            // sh "ckjzxkckzxkczxkckzxckasdasd"
-
-            // echo "[LOG] sh sleep for 3 minutes"
-            // sh "sleep 180"
-            // sh 'pwsh -c "Start-Sleep -s 180"'
-
-            echo "[LOG] going to sleep for a minute"
-            sleep(time: 5, unit: "MINUTES")
-            echo "[LOG] resuming after sleep"
-          } catch (FlowInterruptedException e) {
-            echo "[LOG] encountered FlowInterruptedException"
-
-            throw e
-            // def user = e.getCauses()[0].getUser()
-            // echo "[LOG] interruptor: ${user.toString()}"
-          } catch (hudson.AbortException ae) {
-            echo "[LOG] encountered AbortException"
-            echo "[LOG] AbortException message: ${ae.getMessage()}"
-
-            if (ae.getMessage().contains('script returned exit code 143')) {
-              echo "[LOG] script was aborted"
-              throw ae
-            }
-          } catch (Exception e) {
-            echo "[LOG] encountered some other exception: ${e.toString()}"
-          }
+        // interruptAwareBat 'powershell -c "Start-Sleep -s 180"'
+        retry (5) {
+          bat 'powershell -c "Start-Sleep -s 180"'
+          // interruptAwareSh 'pwsh -c "Start-Sleep -s 180"'
         }
+        // interruptAwareBat 'kskljsdlkfsdkjlflkjdsf'
+        // interruptAwareSh 'skjdaskjdkasdaskjd'
+        
+        // script {
+        //   try {
+        //     // echo "[LOG] this will definitely fail"
+        //     // sh "ckjzxkckzxkczxkckzxckasdasd"
+
+        //     // echo "[LOG] sh sleep for 3 minutes"
+        //     // sh "sleep 180"
+        //     // sh 'pwsh -c "Start-Sleep -s 180"'
+
+        //     echo "[LOG] going to sleep for a minute"
+        //     sleep(time: 5, unit: "MINUTES")
+        //     echo "[LOG] resuming after sleep"
+        //   } catch (FlowInterruptedException e) {
+        //     echo "[LOG] encountered FlowInterruptedException"
+
+        //     throw e
+        //     // def user = e.getCauses()[0].getUser()
+        //     // echo "[LOG] interruptor: ${user.toString()}"
+        //   } catch (hudson.AbortException ae) {
+        //     echo "[LOG] encountered AbortException"
+        //     echo "[LOG] AbortException message: ${ae.getMessage()}"
+
+        //     if (ae.getMessage().contains('script returned exit code 143')) {
+        //       echo "[LOG] script was aborted"
+        //       throw ae
+        //     }
+        //   } catch (Exception e) {
+        //     echo "[LOG] encountered some other exception: ${e.toString()}"
+        //   }
+        // }
 
         echo "[LOG] resuming after try\\catch"
       }
