@@ -1,0 +1,23 @@
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage ('Do Something') {
+      steps {
+        catchError {
+          echo "[LOG] going to sleep for a minute"
+          sleep(time: 5, unit: "MINUTES")
+          echo "[LOG] resuming after sleep"
+        }
+
+        echo "[LOG] resuming after try\\catch"
+      }
+    }
+
+  }
+}
