@@ -1,18 +1,47 @@
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import jenkins.model.CauseOfInterruption
+
 pipeline {
   agent any
 
   options {
     timestamps()
+    timeout(time: 3, unit: 'MINUTES')
   }
 
   stages {
 
     stage ('Do Something') {
       steps {
-        catchError {
-          echo "[LOG] going to sleep for a minute"
-          sleep(time: 5, unit: "MINUTES")
-          echo "[LOG] resuming after sleep"
+        script {
+          try {
+            // echo "[LOG] this will definitely fail"
+            // sh "ckjzxkckzxkczxkckzxckasdasd"
+
+            // echo "[LOG] sh sleep for 3 minutes"
+            // sh "sleep 180"
+            // sh 'pwsh -c "Start-Sleep -s 180"'
+
+            echo "[LOG] going to sleep for a minute"
+            sleep(time: 5, unit: "MINUTES")
+            echo "[LOG] resuming after sleep"
+          } catch (FlowInterruptedException e) {
+            echo "[LOG] encountered FlowInterruptedException"
+
+            throw e
+            // def user = e.getCauses()[0].getUser()
+            // echo "[LOG] interruptor: ${user.toString()}"
+          } catch (hudson.AbortException ae) {
+            echo "[LOG] encountered AbortException"
+            echo "[LOG] AbortException message: ${ae.getMessage()}"
+
+            if (ae.getMessage().contains('script returned exit code 143')) {
+              echo "[LOG] script was aborted"
+              throw ae
+            }
+          } catch (Exception e) {
+            echo "[LOG] encountered some other exception: ${e.toString()}"
+          }
         }
 
         echo "[LOG] resuming after try\\catch"
