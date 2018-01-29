@@ -1,0 +1,23 @@
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage ('Do Something') {
+      steps {
+        retry(5) {
+          echo '[LOG] this should fail'
+          bat "asdasdcxzczxc"
+          echo '[LOG] command after fail'
+        }
+
+        echo "[LOG] final command"
+      }
+    }
+
+  }
+}
