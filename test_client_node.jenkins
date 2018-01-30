@@ -2,9 +2,8 @@ def clone(String url, String branch) {
   checkout([$class: 'GitSCM',
     branches: [[name: "*/${branch}"]],
     doGenerateSubmoduleConfigurations: false,
-    extensions: [[$class: 'CleanBeforeCheckout'],
-    [$class: 'CheckoutOption', timeout: 30]],
-    gitTool: 'Default',
+    extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 30]],
+    gitTool: 'Default', 
     submoduleCfg: [],
     userRemoteConfigs: [[url: url]]])
 }
