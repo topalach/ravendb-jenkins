@@ -52,8 +52,9 @@ pipeline {
         }
 
         dir (server_build_dir) {
-          bat "powershell -c 'Start-Process -FilePath \"Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true\" -NoNewWindow'"
+          bat "powershell -c 'Start-Process -FilePath \"./Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true --Non-interactive\" -NoNewWindow'"
           echo "[LOG] Raven.Server.exe was started"
+          sleep(time: 30, unit: "SECONDS")
         }
       }
     }
