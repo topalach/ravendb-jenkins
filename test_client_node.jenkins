@@ -52,8 +52,8 @@ pipeline {
         }
 
         dir (server_build_dir) {
-          //bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true"
           bat "powershell -c 'Start-Process -FilePath \"Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true\" -NoNewWindow'"
+          echo "[LOG] Raven.Server.exe was started"
         }
       }
     }
@@ -61,7 +61,8 @@ pipeline {
     stage ('Server: stop') {
       steps {
         dir (server_build_dir) {
-          bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true --non-interactive"
+          bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
+          echo "[LOG] Raven.Server.exe was stopped"
         }
       }
     }
