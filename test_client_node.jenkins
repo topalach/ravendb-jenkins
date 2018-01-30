@@ -52,7 +52,16 @@ pipeline {
         }
 
         dir (server_build_dir) {
-          bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true"
+          //bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true"
+          bat "powershell -c 'Start-Process -FilePath \"Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true\" -NoNewWindow'"
+        }
+      }
+    }
+
+    stage ('Server: stop') {
+      steps {
+        dir (server_build_dir) {
+          bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true --non-interactive"
         }
       }
     }
