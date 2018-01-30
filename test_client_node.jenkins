@@ -52,6 +52,7 @@ pipeline {
         }
 
         dir (server_build_dir) {
+          bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
           bat "powershell -c 'Start-Process -FilePath \"./Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true --Non-interactive\" -NoNewWindow'"
           echo "[LOG] Raven.Server.exe was started"
           sleep(time: 30, unit: "SECONDS")
