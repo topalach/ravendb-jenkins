@@ -27,25 +27,21 @@ pipeline {
 
   stages {
 
-    stage ('Prepare') {
+    stage ('Prepare & clone') {
       steps {
         script {
           server_runtime = 'win10-x64'
-          server_port = "40440"
+          server_url = "http://localhost:40440"
           server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
         }
-      }
-    }
 
-    stage ('Clone') {
-      steps {
         dir (env.sourceCodeDir) {
           clone(env.repoUrl, env.branch)
         }
       }
     }
 
-    stage ('Build & start server') {
+    stage ('Server: build & start') {
       steps {
         dir (env.sourceCodeDir) {
           bat 'dotnet restore'
@@ -56,7 +52,7 @@ pipeline {
         }
 
         dir (server_build_dir) {
-          bat "Raven.Server.exe --ServerUrl="
+          bat "Raven.Server.exe --ServerUrl=${server_url} --RunInMemory=true"
         }
       }
     }
