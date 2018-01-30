@@ -1,0 +1,44 @@
+pipeline {
+  agent {
+    label 'windows-agent'
+  }
+
+  options {
+    timeout(time: 3, unit: 'HOURS')
+    timestamps()
+  }
+
+  environment {
+    repoUrl = 'https://github.com/ravendb/ravendb.git'
+    branch = 'v4.0'
+
+    sourceCodeDir = 's'
+    server_runtime = 'win10-x64'
+  }
+
+  stages {
+
+    stage ('Clone') {
+      steps {
+        dir (env.sourceCodeDir) {
+          git url: env.repoUrl, branch: env.branch, poll: true
+
+          bat '''powershell -file ../Shared_Scripts/v4.0/cleanup.ps1'''
+        }
+      }
+    }
+
+    stage ('Build & start server') {
+      steps {
+        dir (env.sourceCodeDir) {
+          bat 'dotnet restore'
+        }
+
+        dir ("${env.sourceCodeDir}/src/Raven.Server") {
+          bat "dotnet publish -c Release -r ${server_runtime} -o ${env.WORKSPACE}/publish/Raven.Server"
+        }
+      }
+    }
+
+  }
+}
