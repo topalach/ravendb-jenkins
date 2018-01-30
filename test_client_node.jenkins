@@ -30,12 +30,16 @@ pipeline {
 
     stage ('Build & start server') {
       steps {
+        script {
+          server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
+        }
+
         dir (env.sourceCodeDir) {
           bat 'dotnet restore'
         }
 
         dir ("${env.sourceCodeDir}/src/Raven.Server") {
-          bat "dotnet publish -c Release -r ${server_runtime} -o ${env.WORKSPACE}/publish/Raven.Server"
+          bat "dotnet publish -c Release -r ${server_runtime} -o ${server_build_dir}"
         }
       }
     }
