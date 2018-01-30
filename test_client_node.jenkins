@@ -1,3 +1,14 @@
+def clone(String url, String branch) {
+  checkout([$class: 'GitSCM',
+    branches: [[name: "*/${branch}"]],
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [[$class: 'CleanBeforeCheckout'],
+    [$class: 'CheckoutOption', timeout: 30]],
+    gitTool: 'Default',
+    submoduleCfg: [],
+    userRemoteConfigs: [[url: url]]])
+}
+
 pipeline {
   agent {
     label 'windows-agent'
@@ -13,33 +24,40 @@ pipeline {
     branch = 'v4.0'
 
     sourceCodeDir = 's'
-    server_runtime = 'win10-x64'
   }
 
   stages {
 
+    stage ('Prepare') {
+      steps {
+        script {
+          server_runtime = 'win10-x64'
+          server_port = "40440"
+          server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
+        }
+      }
+    }
+
     stage ('Clone') {
       steps {
         dir (env.sourceCodeDir) {
-          git url: env.repoUrl, branch: env.branch, poll: true
-
-          bat '''powershell -file ../Shared_Scripts/v4.0/cleanup.ps1'''
+          clone(env.repoUrl, env.branch)
         }
       }
     }
 
     stage ('Build & start server') {
       steps {
-        script {
-          server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
-        }
-
         dir (env.sourceCodeDir) {
           bat 'dotnet restore'
         }
 
         dir ("${env.sourceCodeDir}/src/Raven.Server") {
           bat "dotnet publish -c Release -r ${server_runtime} -o ${server_build_dir}"
+        }
+
+        dir (server_build_dir) {
+          bat "Raven.Server.exe --ServerUrl="
         }
       }
     }
