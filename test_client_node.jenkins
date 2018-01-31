@@ -1,3 +1,6 @@
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import java.lang.Integer
+
 def clone(String url, String branch) {
   checkout([$class: 'GitSCM',
     branches: [[name: "*/${branch}"]],
@@ -6,6 +9,33 @@ def clone(String url, String branch) {
     gitTool: 'Default', 
     submoduleCfg: [],
     userRemoteConfigs: [[url: url]]])
+}
+
+def retryBat(String command, Integer times) {
+  script {
+    def i = 0
+    def run_again = true
+
+    while (i < times && run_again) {
+      i++
+      try {
+        bat command
+        run_again = false
+      } catch (FlowInterruptedException e) {
+        throw e // rethrowing will cause the pipeline to stop
+      } catch (hudson.AbortException ae) {
+        if (ae.getMessage().contains('script returned exit code -1')) {
+          throw ae
+        }
+      } catch (Exception e) {
+        echo "[LOG] encountered ${e.toString()}"
+      }
+    }
+
+    if (run_again) {
+      error("Bat retry failed.")
+    }
+  }
 }
 
 pipeline {
@@ -19,10 +49,14 @@ pipeline {
   }
 
   environment {
-    repoUrl = 'https://github.com/ravendb/ravendb.git'
-    branch = 'v4.0'
+    server_repo_url = 'https://github.com/ravendb/ravendb.git'
+    server_repo_branch = 'v4.0'
 
-    sourceCodeDir = 's'
+    client_repo_url = 'https://github.com/ravendb/ravendb-nodejs-client.git'
+    client_repo_branch = 'v4.0'
+
+    server_src_dir = 's'
+    client_src_dir = 'c'
   }
 
   stages {
@@ -31,32 +65,49 @@ pipeline {
       steps {
         script {
           server_runtime = 'win10-x64'
-          server_url = "http://localhost:40440"
+          server_port = '40440'
+          server_url = "http://localhost:${server_port}"
           server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
         }
 
-        dir (env.sourceCodeDir) {
-          clone(env.repoUrl, env.branch)
+        dir (env.server_src_dir) {
+          clone(env.server_repo_url, env.server_repo_branch)
+        }
+
+        dir (env.client_src_dir) {
+          clone(env.client_repo_url, env.client_repo_branch)
         }
       }
     }
 
     stage ('Server: build & start') {
       steps {
-        dir (env.sourceCodeDir) {
+        dir (env.server_src_dir) {
           bat 'dotnet restore'
         }
 
-        dir ("${env.sourceCodeDir}/src/Raven.Server") {
+        dir ("${env.server_src_dir}/src/Raven.Server") {
           bat "dotnet publish -c Release -r ${server_runtime} -o ${server_build_dir}"
         }
 
         dir (server_build_dir) {
           bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
-          // bat "powershell -c 'Start-Process -FilePath \"./Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true --Non-interactive\" -NoNewWindow'"
-          // bat '''powershell -c "Start-Process -FilePath \"./Raven.Server.exe\" -ArgumentList \"--ServerUrl=${server_url} --RunInMemory=true --Non-interactive\"" -NoNewWindow'''
-          echo "[LOG] Raven.Server.exe was started"
-          sleep(time: 30, unit: "SECONDS")
+        }
+      }
+    }
+
+    stage ('Client: build') {
+      steps {
+        dir (env.client_src_dir) {
+          retryBat('npm install', 5)
+        }
+      }
+    }
+
+    stage ('Client: test') {
+      steps {
+        dir (env.client_src_dir) {
+          bat "npm run gulp -- run:tests --ravendb-host=localhost --ravendb-port=${server_port}"
         }
       }
     }
@@ -65,7 +116,6 @@ pipeline {
       steps {
         dir (server_build_dir) {
           bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
-          echo "[LOG] Raven.Server.exe was stopped"
         }
       }
     }
