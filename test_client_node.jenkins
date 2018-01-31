@@ -107,7 +107,8 @@ pipeline {
     stage ('Client: test') {
       steps {
         dir (env.client_src_dir) {
-          bat "npm run gulp -- run:tests --ravendb-host=localhost --ravendb-port=${server_port}"
+          bat "npm run gulp -- run:tests --ravendb-host=localhost --ravendb-port=${server_port} --report-xml"
+          junit "test-results.xml"
         }
       }
     }
