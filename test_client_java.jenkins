@@ -50,7 +50,6 @@ pipeline {
 
   tools {
     maven 'Maven_3_5_2'
-    jdk 'jdk8'
   }
 
   environment {
