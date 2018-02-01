@@ -1,0 +1,36 @@
+def getJson(String url) {
+  def response = httpRequest url: url, authentication: env.credentialsId
+  def json = readJSON text: response.getContent()
+  return json
+}
+
+def getLastCompletedBuild(String jobName) {
+  return getJson("${env.serverAddress}/job/${jobName}/lastCompletedBuild/api/json?tree=result,url,duration")
+}
+
+pipeline {
+  agent any
+
+  environment {
+    serverAddress = "http://172.26.156.24:8080"
+    credentialsId = 'jenkins-bot'
+  }
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage ('Do Something') {
+      steps {
+        script {
+          def build = getLastCompletedBuild("test_pipeline")
+          def duration = build['duration']
+          echo "[LOG] duration: ${duration}"
+        }
+      }
+    }
+
+  }
+}
