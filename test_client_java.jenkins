@@ -62,6 +62,9 @@ pipeline {
 
     server_src_dir = 's'
     client_src_dir = 'c'
+
+    server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
+    RAVENDB_JAVA_TEST_SERVER_PATH = "${env.server_build_dir}/Raven.Server.exe"
   }
 
   stages {
@@ -72,7 +75,6 @@ pipeline {
           server_runtime = 'win10-x64'
           server_port = '40440'
           server_url = "http://localhost:${server_port}"
-          server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
         }
 
         dir (env.server_src_dir) {
@@ -85,19 +87,19 @@ pipeline {
       }
     }
 
-    stage ('Server: build & start') {
+    stage ('Server: build') {
       steps {
         dir (env.server_src_dir) {
           bat 'dotnet restore'
         }
 
         dir ("${env.server_src_dir}/src/Raven.Server") {
-          bat "dotnet publish -c Release -r ${server_runtime} -o ${server_build_dir}"
+          bat "dotnet publish -c Release -r ${server_runtime} -o ${env.server_build_dir}"
         }
 
-        dir (server_build_dir) {
-          bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
-        }
+        // dir (env.server_build_dir) {
+        //   bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
+        // }
       }
     }
 
