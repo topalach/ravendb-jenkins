@@ -97,6 +97,10 @@ pipeline {
           bat "dotnet publish -c Release -r ${server_runtime} -o ${env.server_build_dir}"
         }
 
+        dir (env.server_build_dir) {
+          writeFile file: "license.json", text: env.RAVEN_License
+        }
+
         // dir (env.server_build_dir) {
         //   bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
         // }
