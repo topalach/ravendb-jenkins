@@ -114,16 +114,23 @@ pipeline {
     stage ('Client: test') {
       steps {
         dir (env.client_src_dir) {
-          bat "mvn -Dmaven.test.failure.ignore=true install"
+          bat "mvn test"
+          junit "target/surefire-reports/*.xml"
+        }
+      }
+
+      post {
+        always {
+          junit "${env.client_src_dir}/target/surefire-reports/*.xml"
         }
       }
     }
 
   }
 
-  post {
-    always {
-      bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
-    }
-  }
+  // post {
+  //   always {
+  //     bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
+  //   }
+  // }
 }
