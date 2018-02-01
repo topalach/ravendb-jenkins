@@ -1,28 +1,27 @@
 import java.util.concurrent.TimeUnit
 
-def appendTimeToMessage(String message, long value, String unitText) {
+def getTimeUnitText(long value, String unitText) {
   script {
     if (value == 0) {
-      return message
+      return ""
     }
 
     def formatted = String.format("%2d", Math.abs(value))
-    return "${message} ${formatted}${unitText}"
+    return "${formatted}${unitText} "
   }
 }
 
 def getBuildDurationDisplayText(int millis) {
   script {
-    def message = ""
     long hours = TimeUnit.MILLISECONDS.toHours(millis);
     long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1);
     long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1);
 
-    message = appendTimeToMessage(message, hours, "h")
-    message = appendTimeToMessage(message, minutes, "m")
-    message = appendTimeToMessage(message, seconds, "s")
+    hoursText = getTimeUnitText(hours, "h")
+    minutesText = getTimeUnitText(minutes, "m")
+    secondsText = getTimeUnitText(seconds, "s")
 
-    return message
+    return "${hoursText}${minutesText}${secondsText}"
   }
 }
 
