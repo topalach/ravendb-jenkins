@@ -50,6 +50,7 @@ pipeline {
 
   tools {
     maven 'Maven_3_5_2'
+    jdk 'jdk8'
   }
 
   environment {
@@ -116,13 +117,11 @@ pipeline {
       }
     }
 
-    stage ('Server: stop') {
-      steps {
-        dir (server_build_dir) {
-          bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
-        }
-      }
-    }
+  }
 
+  post {
+    always {
+      bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
+    }
   }
 }
