@@ -9,10 +9,6 @@ def clone(String url, String branch) {
     gitTool: 'Default', 
     submoduleCfg: [],
     userRemoteConfigs: [[url: url]]])
-
-    catchError {
-      bat "git clean -fxd"
-    }
 }
 
 def retryBat(String command, Integer times) {
