@@ -22,7 +22,8 @@ pipeline {
     server_repo_url = 'https://github.com/ravendb/ravendb.git'
     server_repo_branch = 'v4.0'
 
-    client_repo_url = 'https://github.com/ravendb/ravendb-ruby-client.git'
+    // client_repo_url = 'https://github.com/ravendb/ravendb-ruby-client.git'
+    client_repo_url = 'https://github.com/topalach/ravendb-ruby-client.git'
     client_repo_branch = 'v4.0'
 
     server_src_dir = 's'
@@ -86,8 +87,14 @@ pipeline {
       steps {
         dir (env.client_src_dir) {
           withEnv(["URL=${server_url}"]) {
-            bat "rake test"
+            bat "rake spec"
           }
+        }
+      }
+
+      post {
+        always {
+          junit 'test/reports/*.xml'
         }
       }
     }
