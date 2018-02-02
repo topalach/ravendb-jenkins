@@ -87,25 +87,25 @@ pipeline {
       steps {
         dir (env.client_src_dir) {
           withEnv(["URL=${server_url}"]) {
-            bat "rake spec"
+            bat "rake test_ci"
           }
         }
       }
 
       post {
         always {
-          junit 'test/reports/*.xml'
+          dir (env.client_src_dir) {
+            junit 'test/reports/*.xml'
+          }
         }
       }
     }
 
-    stage ('Server: stop') {
-      steps {
-        dir (server_build_dir) {
-          bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
-        }
-      }
-    }
+  }
 
+  post {
+    always {
+      bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
+    }
   }
 }
