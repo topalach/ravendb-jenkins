@@ -1,0 +1,105 @@
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
+import java.lang.Integer
+
+def clone(String url, String branch) {
+  checkout([$class: 'GitSCM',
+    branches: [[name: "*/${branch}"]],
+    doGenerateSubmoduleConfigurations: false,
+    extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 30]],
+    gitTool: 'Default', 
+    submoduleCfg: [],
+    userRemoteConfigs: [[url: url]]])
+
+    catchError {
+      bat "git clean -fxd"
+    }
+}
+
+pipeline {
+  agent {
+    label 'windows-agent'
+  }
+
+  options {
+    timeout(time: 3, unit: 'HOURS')
+    timestamps()
+  }
+
+  tools {
+    go 'Go_1_9_3'
+  }
+
+  environment {
+    server_repo_url = 'https://github.com/ravendb/ravendb.git'
+    server_repo_branch = 'v4.0'
+
+    client_repo_url = 'https://github.com/ravendb/ravendb-go-client.git'
+    client_repo_branch = 'v4.0'
+
+    server_src_dir = 's'
+    client_src_dir = 'c'
+  }
+
+  stages {
+
+    stage ('Prepare & clone') {
+      steps {
+        script {
+          server_runtime = 'win10-x64'
+          server_port = '40440'
+          server_url = "http://localhost:${server_port}"
+          server_build_dir = "${env.WORKSPACE}/publish/Raven.Server"
+        }
+
+        dir (env.server_src_dir) {
+          clone(env.server_repo_url, env.server_repo_branch)
+        }
+
+        dir (env.client_src_dir) {
+          clone(env.client_repo_url, env.client_repo_branch)
+        }
+      }
+    }
+
+    stage ('Server: build & start') {
+      steps {
+        dir (env.server_src_dir) {
+          bat 'dotnet restore'
+        }
+
+        dir ("${env.server_src_dir}/src/Raven.Server") {
+          bat "dotnet publish -c Release -r ${server_runtime} -o ${server_build_dir}"
+        }
+
+        dir (server_build_dir) {
+          bat "powershell -c \"${env.WORKSPACE}/Shared_Scripts/v4.0/start_server.ps1 ${server_url}\""
+        }
+      }
+    }
+
+    stage ('Client: build') {
+      steps {
+        dir (env.client_src_dir) {
+          echo "step placeholder"
+        }
+      }
+    }
+
+    stage ('Client: test') {
+      steps {
+        dir (env.client_src_dir) {
+          echo "step placeholder"
+        }
+      }
+    }
+
+    stage ('Server: stop') {
+      steps {
+        dir (server_build_dir) {
+          bat 'taskkill /IM Raven.Server.exe /F /T /FI \"MEMUSAGE gt 1\"'
+        }
+      }
+    }
+
+  }
+}
