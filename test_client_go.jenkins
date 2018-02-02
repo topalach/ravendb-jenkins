@@ -37,7 +37,7 @@ pipeline {
     client_repo_branch = 'v4.0'
 
     server_src_dir = 's'
-    client_src_dir = 'c'
+    client_go_path = 'go'
   }
 
   stages {
@@ -55,8 +55,13 @@ pipeline {
           clone(env.server_repo_url, env.server_repo_branch)
         }
 
-        dir (env.client_src_dir) {
-          clone(env.client_repo_url, env.client_repo_branch)
+        dir (env.client_go_path) {
+          dir ("src/github.com") {
+            clone(env.client_repo_url, env.client_repo_branch)
+          }
+
+          dir ("bin") { }
+          dir ("pkg") { }
         }
       }
     }
@@ -77,19 +82,31 @@ pipeline {
       }
     }
 
-    stage ('Client: build') {
-      steps {
-        dir (env.client_src_dir) {
-          echo "step placeholder"
-        }
-      }
-    }
-
     stage ('Client: test') {
       steps {
-        dir (env.client_src_dir) {
-          echo "step placeholder"
-          bat "go version"
+        withEnv(["GOPATH=${env.client_go_path}"]) {
+          dir ("${env.client_go_path}/src/github.com") {
+            // bat "go get -u github.com/google/uuid"
+            //github.com/gedex/inflector
+
+            dir ("data") {
+              bat "go get -u github.com/gedex/inflector"
+              bat "go install"
+              bat "go test"
+            }
+            
+            dir ("documents") {
+              bat "go get -u github.com/OneOfOne/xxhash"
+              bat "go get -u github.com/golang/glog"
+              bat "go get -u github.com/google/uuid"
+
+              bat "go test"  
+            }
+
+            dir ("hilo") {
+              bat "go get -u github.com/gedex/inflector"
+            }
+          }
         }
       }
     }
