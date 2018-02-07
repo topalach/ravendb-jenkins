@@ -14,8 +14,10 @@ def errorProneBat(String command) {
       if (ae.getMessage().find(/script returned exit code -1$/) != null) {
         throw ae
       }
+      currentBuild.result = "FAILURE"
     } catch (Exception e) {
       echo "[LOG] encountered ${e.toString()}"
+      currentBuild.result = "FAILURE"
     }
   }
 }
@@ -81,10 +83,10 @@ pipeline {
 
     stage ('Do Something') {
       steps {
-        errorProneBat 'powershell -c "Start-Sleep -s 180"'
+        // errorProneBat 'powershell -c "Start-Sleep -s 180"'
 
         // retryBat('powershell -c "Start-Sleep -s 10"', 5)
-        // errorProneBat 'kskljsdlkfsdkjlflkjdsf'
+        errorProneBat 'kskljsdlkfsdkjlflkjdsf'
         // errorProneBat 'skjdaskjdkasdaskjd'
         
         // script {
