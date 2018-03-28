@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<test-results name="Test results" errors="0" inconclusive="0" ignored="0" invalid="0" not-run="0" date="2018-01-19" time="10:22:15" total="1593" failures="4" skipped="7">
+<test-results name="Test results" errors="0" inconclusive="0" ignored="0" invalid="0" not-run="0" date="2018-01-19" time="10:22:15" total="1591" failures="2" skipped="7">
   <environment os-version="unknown" platform="unknown" cwd="unknown" machine-name="unknown" user="unknown" user-domain="unknown" nunit-version="xUnit.net 99.99.99.0" clr-version="64-bit .NET Standard [collection-per-class, non-parallel]" />
   <culture-info current-culture="unknown" current-uiculture="unknown" />
   <test-suite type="Assemblies" name="xUnit.net Tests" executed="True" success="False" result="Failure" time="236.173">
