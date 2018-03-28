@@ -1,0 +1,154 @@
+import java.lang.Integer
+import java.util.concurrent.TimeUnit
+
+def getBuildDurationDisplayText(int millis) {
+  script {
+    long hours = TimeUnit.MILLISECONDS.toHours(millis);
+    long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1);
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1);
+
+    return String.format("%02dh %02dm %02ds", Math.abs(hours), Math.abs(minutes), Math.abs(seconds))
+  }
+}
+
+def isTextInConsoleOutput(String jobName, String textToFind) {
+  script {
+    def response = httpRequest url: "${env.serverAddress}/job/${jobName}/lastCompletedBuild/consoleText", authentication: env.credentialsId
+    def consoleText = response.getContent()
+
+    return consoleText.contains(textToFind)
+  }
+}
+
+def appendToSlackMessage(String jobDisplayName, String summary, String jobUrl, String color) {
+  slackAttachments = "${slackAttachments},{\"title\":\"${jobDisplayName}\", \"title_link\":\"${jobUrl}\", \"color\":\"${color}\", \"fields\": [ {\"value\":\"${summary}\"}] }"
+}
+
+def addSlackMessageForNoTests(String jobDisplayName, String jobUrl) {
+  appendToSlackMessage(jobDisplayName, "No tests were recorded", jobUrl, "warning")
+}
+
+def addSlackMessageForTestFail(String jobDisplayName, String summary, String jobUrl) {
+  appendToSlackMessage(jobDisplayName, summary, jobUrl, "danger")
+}
+
+def addSlackMessageForTestSuccess(String jobDisplayName, String summary, String jobUrl) {
+  appendToSlackMessage(jobDisplayName, summary, jobUrl, "good")
+}
+
+def getTestSummary(Integer failCount, Integer passCount, Integer skipCount, Integer totalCount) {
+  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}"
+}
+
+def getJson(String url) {
+  def response = httpRequest url: url, authentication: env.credentialsId
+  def json = readJSON text: response.getContent()
+  return json
+}
+
+def getLastCompletedBuild(String jobName) {
+  return getJson("${env.serverAddress}/job/${jobName}/lastCompletedBuild/api/json?tree=result,url,duration")
+}
+
+def getTestReport(String jobName) {
+  return getJson("${env.serverAddress}/job/${jobName}/lastCompletedBuild/testReport/api/json?tree=failCount,passCount,skipCount")
+}
+
+def checkIfWasTimeout(String jobName) {
+  return isTextInConsoleOutput(jobName, "Cancelling nested steps due to timeout")
+}
+
+def getTimeoutMessage(String jobName, int buildDuration) {
+    // def durationText = getBuildDurationDisplayText(buildDuration)
+    // return "Build timed out after ${durationText}"
+    return "Build timed out."
+}
+
+def setSlackMessageForJob(String jobName, String jobDisplayName) {
+  script {
+    def build = getLastCompletedBuild(jobName)
+    def buildUrl = build['url']
+    def buildResult = build['result']
+    def duration = (int)build['duration']
+
+    def tests
+    try {
+      tests = getTestReport(jobName)
+    } catch(Exception e) {
+      if (buildResult != "FAILURE") {
+        addSlackMessageForNoTests(jobDisplayName, buildUrl)
+        return
+      }
+
+      def wasTimeout = checkIfWasTimeout(jobName)
+      if (wasTimeout) {
+        def timeoutMessage = getTimeoutMessage(jobName, duration)
+        appendToSlackMessage(jobDisplayName, timeoutMessage, buildUrl, "danger")
+        return
+      }
+
+      appendToSlackMessage(jobDisplayName, "Build failed", buildUrl, "danger")
+      return
+    }
+    
+    def failCount = tests['failCount'] as Integer
+    def passCount = tests['passCount'] as Integer
+    def skipCount = tests['skipCount'] as Integer
+    def totalCount = failCount + passCount + skipCount
+
+    if (totalCount == 0) {
+      addSlackMessageForNoTests(jobDisplayName, buildUrl)
+      return
+    }
+
+    def testSummary = getTestSummary(failCount, passCount, skipCount, totalCount)
+
+    if (failCount > 0 || buildResult == "FAILURE" || buildResult == "ABORTED") {
+      def wasTimeout = checkIfWasTimeout(jobName)
+      if (wasTimeout) {
+        def timeoutMessage = getTimeoutMessage(jobName, duration)
+        testSummary = "${testSummary} | ${timeoutMessage}"
+      }
+
+      addSlackMessageForTestFail(jobDisplayName, testSummary, buildUrl)
+    } else {
+      addSlackMessageForTestSuccess(jobDisplayName, testSummary, buildUrl)
+    }
+  }
+}
+
+pipeline {
+  agent any
+
+  environment {
+    serverAddress = "http://jenkins.hibernatingrhinos.com"
+    credentialsId = 'jenkins-bot'
+  }
+
+  options {
+    timestamps()
+  }
+
+  stages {
+
+    stage('check'){
+      steps {
+        script {
+          slackAttachments = "{\"fields\": [ {\"value\":\"Daily status summary\"}] }"
+          
+          setSlackMessageForJob('report_success', 'First Test Suite')
+          setSlackMessageForJob('report_failed', 'Second Test Suite')
+          setSlackMessageForJob('slack_test', 'Third Test Suite')
+        }
+      }
+    }
+
+    stage('report') {
+      steps {
+          echo slackAttachments
+        // slackSend channel: "#general", message: "", attachments: "[${slackAttachments}]"
+      }
+    }
+
+  }
+}
