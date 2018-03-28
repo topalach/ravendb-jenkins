@@ -37,11 +37,14 @@ def addSlackMessageForTestSuccess(String jobDisplayName, String summary, String 
 }
 
 def getTestSummary(Integer failCount, Integer passCount, Integer skipCount, Integer totalCount, Integer totalChange) {
-  if (totalChange == 0) {
-    return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}"
+  def changeText = ""
+  if (totalChange > 0) {
+    changeText = " (+${totalChange})"
+  } else if (totalChange < 0) {
+    changeText = " (${totalChange})"
   }
 
-  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount} (${totalChange})"
+  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}${changeText}"
 }
 
 def getJson(String url) {
