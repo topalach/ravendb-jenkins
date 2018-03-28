@@ -160,7 +160,7 @@ pipeline {
   agent any
 
   environment {
-    serverAddress = "http://jenkins.hibernatingrhinos.com"
+    serverAddress = "http://172.26.156.24:8080"
     credentialsId = 'jenkins-bot'
   }
 
