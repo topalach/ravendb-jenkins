@@ -5,7 +5,7 @@ pipeline {
 
     stage ('Report tests') {
       steps {
-        nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true, testDataPublishers: [[$class: 'StabilityTestDataPublisher']]
+        nunit testResultsPattern: 'custom_files/testResultsFailed.xml', failIfNoResults: true
       }
     }
 
