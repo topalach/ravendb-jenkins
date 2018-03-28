@@ -161,7 +161,7 @@ pipeline {
   agent any
 
   environment {
-    serverAddress = "http://172.26.156.24:8080"
+    serverAddress = "http://localhost:8080"
     credentialsId = 'jenkins-bot'
   }
 
