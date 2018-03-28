@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-results name="Test results" errors="0" inconclusive="0" ignored="0" invalid="0" not-run="0" date="2018-03-28" time="13:44:03" total="153" failures="0" skipped="0">
+  <environment os-version="unknown" platform="unknown" cwd="unknown" machine-name="unknown" user="unknown" user-domain="unknown" nunit-version="xUnit.net 2.4.0.3958" clr-version="64-bit .NET Standard [collection-per-assembly, non-parallel]" />
+  <culture-info current-culture="unknown" current-uiculture="unknown" />
+  <test-suite type="Assemblies" name="xUnit.net Tests" executed="True" success="True" result="Success" time="78.307">
+    <results>
+      <test-suite type="Assembly" executed="True" name="Raven.Tests.Core.dll" result="Success" success="True" time="78.307">
+        <results>
+          <test-suite type="TestCollection" executed="True" name="Test collection for Raven.Tests.Core.dll" result="Success" success="True" time="0.014">
+            <results>
+              <test-case name="Raven.Tests.Core.Utils.EtagTests.RoundTrip" executed="True" result="Success" success="True" time="0.0141223" />
+            </results>
+          </test-suite>
+          <test-suite type="TestCollection" executed="True" name="Core" result="Success" success="True" time="70.413">
+            <results>
+              <test-case name="Raven.Tests.Core.Streaming.DocumentStreaming.CanStreamDocumentsStartingWith" executed="True" result="Success" success="True" time="2.9379799" />
+              <test-case name="Raven.Tests.Core.Streaming.DocumentStreaming.CanStreamDocumentsFromSpecifiedEtag" executed="True" result="Success" success="True" time="0.2799756" />
+              <test-case name="Raven.Tests.Core.Streaming.QueryStreaming.CanStreamQueryResults" executed="True" result="Success" success="True" time="4.0199793" />
+              <test-case name="Raven.Tests.Core.Shard.Sharding.CanUseShardedDocumentStore" executed="True" result="Success" success="True" time="2.3729309" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanLazilyLoadEntity" executed="True" result="Success" success="True" time="0.300017" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseDefer" executed="True" result="Success" success="True" time="0.1175098" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanMarkReadOnly" executed="True" result="Success" success="True" time="0.1274519" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanExecuteAllPendingLazyOperations" executed="True" result="Success" success="True" time="0.10784" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanAggressivelyCacheFor" executed="True" result="Success" success="True" time="0.1167463" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseEvict" executed="True" result="Success" success="True" time="0.105625" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanGetChangesInformation" executed="True" result="Success" success="True" time="0.0868061" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanGetDocumentUrl" executed="True" result="Success" success="True" time="0.0669768" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseMaxNumberOfRequestsPerSession" executed="True" result="Success" success="True" time="0.0947406" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseNumberOfRequests" executed="True" result="Success" success="True" time="0.1046067" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanGetEtagFor" executed="True" result="Success" success="True" time="0.0750771" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanGetDocumentMetadata" executed="True" result="Success" success="True" time="0.0868807" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseRefresh" executed="True" result="Success" success="True" time="0.104592" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseClear" executed="True" result="Success" success="True" time="0.0770205" />
+              <test-case name="Raven.Tests.Core.Session.Advanced.CanUseIsLoaded" executed="True" result="Success" success="True" time="0.0836071" />
+              <test-case name="Raven.Tests.Core.Session.Crud.DeletingEntityByIdThatIsNotTrackedShouldThrow" executed="True" result="Success" success="True" time="0.1364109" />
+              <test-case name="Raven.Tests.Core.Session.Crud.CanDelete" executed="True" result="Success" success="True" time="0.2606524" />
+              <test-case name="Raven.Tests.Core.Session.Crud.CanSaveAndLoad" executed="True" result="Success" success="True" time="0.1361892" />
+              <test-case name="Raven.Tests.Core.Session.Crud.StoringDocumentWithTheSameIdInTheSameSessionShouldThrow" executed="True" result="Success" success="True" time="0.0941628" />
+              <test-case name="Raven.Tests.Core.Session.Crud.CanSaveAndLoadDynamicDocuments" executed="True" result="Success" success="True" time="0.235526" />
+              <test-case name="Raven.Tests.Core.Session.Crud.CanLoadWithTransformer" executed="True" result="Success" success="True" time="0.6119787" />
+              <test-case name="Raven.Tests.Core.Session.Crud.CanLoadWithInclude" executed="True" result="Success" success="True" time="0.233281" />
+              <test-case name="Raven.Tests.Core.Session.Crud.DeletingEntityThatIsNotTrackedShouldThrow" executed="True" result="Success" success="True" time="0.0962646" />
+              <test-case name="Raven.Tests.Core.Session.Includes.BasicInclude" executed="True" result="Success" success="True" time="0.0923593" />
+              <test-case name="Raven.Tests.Core.Session.Keys.KeyGeneration" executed="True" result="Success" success="True" time="0.1074708" />
+              <test-case name="Raven.Tests.Core.Session.Keys.KeyGenerationOnLoad" executed="True" result="Success" success="True" time="0.1064133" />
+              <test-case name="Raven.Tests.Core.Session.Keys.GetDocumentId" executed="True" result="Success" success="True" time="0.0643328" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanBypassOptmisticConcurrencyCheckByExplicitlyProvidingAnEtagOfNull" executed="True" result="Success" success="True" time="0.1133503" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanBypassOptmisticConcurrencyCheckByExplicitlyProvidingAnEtagOfNullToStoreAsync" executed="True" result="Success" success="True" time="0.0966021" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanBypassOptmisticConcurrencyCheckByExplicitlyProvidingAnEtagOfNullToStore" executed="True" result="Success" success="True" time="0.0793669" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanBypassOptmisticConcurrencyCheckByExplicitlyProvidingAnEtagAndAnIdOfNullToStoreAsync" executed="True" result="Success" success="True" time="0.1111109" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanBypassOptmisticConcurrencyCheckByExplicitlyProvidingAnEtagAndAnIdOfNullToStore" executed="True" result="Success" success="True" time="0.0725557" />
+              <test-case name="Raven.Tests.Core.Session.OptimisticConcurrency.CanUseOptmisticConcurrency" executed="True" result="Success" success="True" time="0.1992602" />
+              <test-case name="Raven.Tests.Core.ScriptedPatching.ScriptedPatchTests.Load_document_should_increase_max_steps_in_algorithm" executed="True" result="Success" success="True" time="1.4648208" />
+              <test-case name="Raven.Tests.Core.ScriptedPatching.ScriptedPatchTests.Max_script_steps_can_be_increased_from_inside_script" executed="True" result="Success" success="True" time="0.6299076" />
+              <test-case name="Raven.Tests.Core.Replication.AttachmentReplication.ShouldCreateConflictThenResolveIt" executed="True" result="Success" success="True" time="0.8966026" />
+              <test-case name="Raven.Tests.Core.Replication.AttachmentReplication.CanReplicateAttachments" executed="True" result="Success" success="True" time="0.4068629" />
+              <test-case name="Raven.Tests.Core.Replication.AttachmentReplication.CanReplicateAttachmentDeletion" executed="True" result="Success" success="True" time="0.5465181" />
+              <test-case name="Raven.Tests.Core.Replication.AutomaticConflictResolution.ShouldResolveDocumentConflictInFavorOfLocalVersion" executed="True" result="Success" success="True" time="0.3155288" />
+              <test-case name="Raven.Tests.Core.Replication.AutomaticConflictResolution.ShouldResolveAttachmentConflictInFavorOfRemoteVersion" executed="True" result="Success" success="True" time="0.3631807" />
+              <test-case name="Raven.Tests.Core.Replication.AutomaticConflictResolution.ShouldResolveDocumentConflictInFavorOfLatestVersion" executed="True" result="Success" success="True" time="2.4358033" />
+              <test-case name="Raven.Tests.Core.Replication.AutomaticConflictResolution.ShouldResolveDocumentConflictInFavorOfRemoteVersion" executed="True" result="Success" success="True" time="0.397363" />
+              <test-case name="Raven.Tests.Core.Replication.AutomaticConflictResolution.ShouldResolveAttachmentConflictInFavorOfLocalVersion" executed="True" result="Success" success="True" time="0.3341905" />
+              <test-case name="Raven.Tests.Core.Replication.DocumentReplication.CanReplicateDocumentDeletion" executed="True" result="Success" success="True" time="0.5501226" />
+              <test-case name="Raven.Tests.Core.Replication.DocumentReplication.CanReplicateDocument" executed="True" result="Success" success="True" time="0.3184118" />
+              <test-case name="Raven.Tests.Core.Replication.DocumentReplication.ShouldCreateConflictThenResolveIt" executed="True" result="Success" success="True" time="0.3619203" />
+              <test-case name="Raven.Tests.Core.Replication.ManualConflictResolution.CanManuallyResolveConflict" executed="True" result="Success" success="True" time="2.3071866" />
+              <test-case name="Raven.Tests.Core.Querying.Escaping.CanPerformQueryOnEscapedText" executed="True" result="Success" success="True" time="0.7361823" />
+              <test-case name="Raven.Tests.Core.Querying.Escaping.CanPerformInQueryWithTermsStartingWithComment" executed="True" result="Success" success="True" time="0.2979929" />
+              <test-case name="Raven.Tests.Core.Querying.Filtering.BasicFiltering" executed="True" result="Success" success="True" time="1.0244472" />
+              <test-case name="Raven.Tests.Core.Querying.Intersection.CanPerformIntersectQuery" executed="True" result="Success" success="True" time="0.6252354" />
+              <test-case name="Raven.Tests.Core.Querying.Linq.CanQueryUsingLinq" executed="True" result="Success" success="True" time="1.0666209" />
+              <test-case name="Raven.Tests.Core.Querying.Paging.BasicPaging" executed="True" result="Success" success="True" time="0.3451731" />
+              <test-case name="Raven.Tests.Core.Querying.Projections.BasicProjections" executed="True" result="Success" success="True" time="0.2563599" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanProvideSuggestionsAndLazySuggestions" executed="True" result="Success" success="True" time="0.2630771" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanDoSpatialSearch" executed="True" result="Success" success="True" time="1.1202477" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanPerformFacetedSearchAndLazyFacatedSearch" executed="True" result="Success" success="True" time="0.7591337" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanSearchByMultipleFields" executed="True" result="Success" success="True" time="0.5444378" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanSearchByMultipleTerms" executed="True" result="Success" success="True" time="0.4648471" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanSearchOnFullyAnalyzedTerm" executed="True" result="Success" success="True" time="0.3863434" />
+              <test-case name="Raven.Tests.Core.Querying.Searching.CanDoSearchBoosting" executed="True" result="Success" success="True" time="0.157787" />
+              <test-case name="Raven.Tests.Core.Querying.Sorting.BasicSorting" executed="True" result="Success" success="True" time="0.4201774" />
+              <test-case name="Raven.Tests.Core.Querying.StaticIndexes.CreateAndQuerySimpleIndexWithRecurse" executed="True" result="Success" success="True" time="0.4489031" />
+              <test-case name="Raven.Tests.Core.Querying.StaticIndexes.CreateAndQuerySimpleMapReduceIndexWithMetadataForCall" executed="True" result="Success" success="True" time="1.1510598" />
+              <test-case name="Raven.Tests.Core.Querying.StaticIndexes.CreateAndQuerySimpleIndexWithReferencedDocuments" executed="True" result="Success" success="True" time="0.517103" />
+              <test-case name="Raven.Tests.Core.Querying.StaticIndexes.CreateAndQueryIndexContainingAllDocumentFields" executed="True" result="Success" success="True" time="0.243246" />
+              <test-case name="Raven.Tests.Core.Issues.RavenDB_10653.ConcurrentDictionaryShouldBeSerializedAndDeserializedCorrectly" executed="True" result="Success" success="True" time="0.124819" />
+              <test-case name="Raven.Tests.Core.Indexing.CustomAnalyzers.CreateAndQuerySimpleIndexWithSortingAndCustomCollateral" executed="True" result="Success" success="True" time="0.4231438" />
+              <test-case name="Raven.Tests.Core.Indexing.CustomAnalyzers.CreateAndQuerySimpleIndexWithCustomAnalyzersAndFieldOptions" executed="True" result="Success" success="True" time="1.0639724" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexCreationTests.IndexCreationShouldWorkAsync" executed="True" result="Success" success="True" time="2.5671065" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexCreationTests.IndexCreationShouldWork" executed="True" result="Success" success="True" time="0.4148834" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexDefinitionMethods.CanUseRecurse" executed="True" result="Success" success="True" time="0.1378498" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexDefinitionMethods.CanUseLoadAttachmentForIndexing" executed="True" result="Success" success="True" time="0.1488843" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexDefinitionMethods.CanUseAsDocumentToIndexAllDocumentFields" executed="True" result="Success" success="True" time="0.1494621" />
+              <test-case name="Raven.Tests.Core.Indexing.IndexDefinitionMethods.CanUseMetadataFor" executed="True" result="Success" success="True" time="0.1349795" />
+              <test-case name="Raven.Tests.Core.Indexing.MultiMap.CanCreateAndSearchMultiMapIndex" executed="True" result="Success" success="True" time="0.1818892" />
+              <test-case name="Raven.Tests.Core.Indexing.ReferencedDocuments.CanUseLoadDocumentToIndexReferencedDocs" executed="True" result="Success" success="True" time="0.288509" />
+              <test-case name="Raven.Tests.Core.Indexing.ReferencedDocuments.CanProceedWhenReferencedDocumentsAreMissing" executed="True" result="Success" success="True" time="0.1546215" />
+              <test-case name="Raven.Tests.Core.Indexing.ReferencedDocuments.ShouldReindexOnReferencedDocumentChange" executed="True" result="Success" success="True" time="0.3134045" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanSpecifyTransformerParameterAndIncludeInTransformer" executed="True" result="Success" success="True" time="0.3595576" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanLoadDocumentInTransformer" executed="True" result="Success" success="True" time="0.1799515" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanApplyTransformerOnQueryResults" executed="True" result="Success" success="True" time="0.29003" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanUseMetadataForInTransformer" executed="True" result="Success" success="True" time="0.5024745" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanUseAsDocumentInTransformer" executed="True" result="Success" success="True" time="0.2700039" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanApplyTransformerOnDynamicQueryResults" executed="True" result="Success" success="True" time="0.2589175" />
+              <test-case name="Raven.Tests.Core.Indexing.ResultTransformers.CanUseTransformerWithParameterOrDefault" executed="True" result="Success" success="True" time="0.3593725" />
+              <test-case name="Raven.Tests.Core.Commands.Admin.CanCreateAndDeleteDatabase" executed="True" result="Success" success="True" time="0.4642214" />
+              <test-case name="Raven.Tests.Core.Commands.Admin.CanGetServerStatistics" executed="True" result="Success" success="True" time="2.4886846" />
+              <test-case name="Raven.Tests.Core.Commands.Admin.CanManageIndexingProcess" executed="True" result="Success" success="True" time="0.1836135" />
+              <test-case name="Raven.Tests.Core.Commands.Attachments.CanPutUpdateMetadataAndDeleteAttachment" executed="True" result="Success" success="True" time="0.2490308" />
+              <test-case name="Raven.Tests.Core.Commands.Batches.CanDoBatchOperations" executed="True" result="Success" success="True" time="0.1704946" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.CanDeleteAndUpdateDocumentByIndex" executed="True" result="Success" success="True" time="0.9898457" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.CanGetDocumentsWhoseIdStartsWithAPrefix" executed="True" result="Success" success="True" time="0.1775969" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.CanCancelPutDocument" executed="True" result="Success" success="True" time="0.1135076" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.Replacing_Value" executed="True" result="Success" success="True" time="0.8128482" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.CanPutGetUpdateAndDeleteDocument" executed="True" result="Success" success="True" time="0.1592192" />
+              <test-case name="Raven.Tests.Core.Commands.Documents.CanStreamDocs" executed="True" result="Success" success="True" time="0.3508988" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanQueryForMetadataAndIndexEntriesOnly" executed="True" result="Success" success="True" time="0.5293309" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanGetTermsForIndex_WithPaging" executed="True" result="Success" success="True" time="0.1835135" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanGetIndexNames" executed="True" result="Success" success="True" time="0.1627202" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanPutUpdateAndDeleteMapIndex" executed="True" result="Success" success="True" time="0.5866812" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanResetIndex" executed="True" result="Success" success="True" time="0.2955138" />
+              <test-case name="Raven.Tests.Core.Commands.Indexes.CanGetTermsForIndex" executed="True" result="Success" success="True" time="0.1676714" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanSwitchDatabases" executed="True" result="Success" success="True" time="0.2132709" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanGetUrlForDocument" executed="True" result="Success" success="True" time="0.0916185" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanGetBuildNumber" executed="True" result="Success" success="True" time="0.2329401" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanDisableAllCaching" executed="True" result="Success" success="True" time="0.1182467" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanGetAListOfDatabasesAsync" executed="True" result="Success" success="True" time="0.1512531" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanGetStatistics" executed="True" result="Success" success="True" time="0.1298747" />
+              <test-case name="Raven.Tests.Core.Commands.Other.CanGetBuildVersion" executed="True" result="Success" success="True" time="0.0892494" />
+              <test-case name="Raven.Tests.Core.Commands.Patching.CanDoScriptedPatching" executed="True" result="Success" success="True" time="1.8412757" />
+              <test-case name="Raven.Tests.Core.Commands.Patching.CanSkipPatchIfEtagMismatch" executed="True" result="Success" success="True" time="0.1090182" />
+              <test-case name="Raven.Tests.Core.Commands.Patching.CanGenerteDynamicIdsOnPutDocument" executed="True" result="Success" success="True" time="0.5555735" />
+              <test-case name="Raven.Tests.Core.Commands.Patching.CanDoSimplePatching" executed="True" result="Success" success="True" time="0.1445951" />
+              <test-case name="Raven.Tests.Core.Commands.Querying.CanGetSuggestions" executed="True" result="Success" success="True" time="0.2170805" />
+              <test-case name="Raven.Tests.Core.Commands.Querying.CanStreamQueryResult" executed="True" result="Success" success="True" time="0.5057901" />
+              <test-case name="Raven.Tests.Core.Commands.Querying.CanProcessLongQueryString" executed="True" result="Success" success="True" time="0.4963133" />
+              <test-case name="Raven.Tests.Core.Commands.Querying.CanDoSimpleQueryOnDatabase" executed="True" result="Success" success="True" time="0.4008768" />
+              <test-case name="Raven.Tests.Core.Commands.Querying.CanGetFacets" executed="True" result="Success" success="True" time="0.3779344" />
+              <test-case name="Raven.Tests.Core.Commands.Transformers.CanPutUpdateAndDeleteTransformer" executed="True" result="Success" success="True" time="0.6196704" />
+              <test-case name="Raven.Tests.Core.ChangesApi.ImplementingChangesClient.ShouldFailWhenClientBaseDoesNotImplementConnectableTypeParameterInterface" executed="True" result="Success" success="True" time="0.0101506" />
+              <test-case name="Raven.Tests.Core.ChangesApi.ImplementingChangesClient.ClientImplementationShouldWorkWithUntypedInterface" executed="True" result="Success" success="True" time="2.4675529" />
+              <test-case name="Raven.Tests.Core.ChangesApi.ImplementingChangesClient.ClientImplementationShouldWorkWithTypedInterface" executed="True" result="Success" success="True" time="2.3722741" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToAllDataSubscriptions" executed="True" result="Success" success="True" time="0.6799378" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToAllTransformers" executed="True" result="Success" success="True" time="0.2264544" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToReplicationConflicts" executed="True" result="Success" success="True" time="0.3481863" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToBulkInsert" executed="True" result="Success" success="True" time="0.3196642" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToAnyBulkInsert" executed="True" result="Success" success="True" time="0.1977339" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToIndexChanges" executed="True" result="Success" success="True" time="0.5242488" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToSpecificDataSubscriptionChanges" executed="True" result="Success" success="True" time="0.2072026" />
+              <test-case name="Raven.Tests.Core.ChangesApi.Subscribing.CanSubscribeToDocumentChanges" executed="True" result="Success" success="True" time="0.2122647" />
+              <test-case name="Raven.Tests.Core.Bundles.MoreLikeThis.CanUseBasicMoreLikeThis" executed="True" result="Success" success="True" time="0.3194766" />
+              <test-case name="Raven.Tests.Core.Bundles.MoreLikeThis.CanUseMoreLikeThisWithIncludes" executed="True" result="Success" success="True" time="0.1532733" />
+              <test-case name="Raven.Tests.Core.Bundles.MoreLikeThis.CanUseMoreLikeThisWithTransformer" executed="True" result="Success" success="True" time="0.1800627" />
+              <test-case name="Raven.Tests.Core.BulkInsert.ChunkedBulkInsert.DocumentsInChunkConstraint" executed="True" result="Success" success="True" time="0.6650135" />
+              <test-case name="Raven.Tests.Core.BulkInsert.ChunkedBulkInsert.ChunkVolumeConstraintMakeSureUnneededConnectionsNotCreated" executed="True" result="Success" success="True" time="0.2569514" />
+              <test-case name="Raven.Tests.Core.BulkInsert.ChunkedBulkInsert.ChunkVolumeConstraint" executed="True" result="Success" success="True" time="0.4826501" />
+              <test-case name="Raven.Tests.Core.BulkInsert.ChunkedBulkInsert.DocumentsInChunkConstraintMakeSureUnneedConnectionsNotCreated" executed="True" result="Success" success="True" time="0.2868658" />
+              <test-case name="Raven.Tests.Core.BulkInsert.ChunkedBulkInsert.ValidateChunkedBulkInsertOperationsIDsCount" executed="True" result="Success" success="True" time="0.2827804" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BasicBulkInsert(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.2197443" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BasicBulkInsert(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Json, ... })" executed="True" result="Success" success="True" time="0.1687474" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BasicBulkInsert(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = None, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.2081202" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldOverwriteWithOverwriteExistingSetToTrue(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.1337573" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldOverwriteWithOverwriteExistingSetToTrue(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Json, ... })" executed="True" result="Success" success="True" time="0.1482219" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldOverwriteWithOverwriteExistingSetToTrue(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = None, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.108634" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldNotOverwriteWithOverwriteExistingSetToFalse(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.105129" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldNotOverwriteWithOverwriteExistingSetToFalse(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = GZip, Format = Json, ... })" executed="True" result="Success" success="True" time="0.0675339" />
+              <test-case name="Raven.Tests.Core.BulkInsert.SimpleBulkInsert.BulkInsertShouldNotOverwriteWithOverwriteExistingSetToFalse(options: BulkInsertOptions { BatchSize = 512, CheckReferencesInIndexes = False, ChunkedBulkInsertOptions = ChunkedBulkInsertOptions { MaxChunkVolumeInBytes = 8388608, MaxDocumentsPerChunk = 2048 }, Compression = None, Format = Bson, ... })" executed="True" result="Success" success="True" time="0.0862503" />
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

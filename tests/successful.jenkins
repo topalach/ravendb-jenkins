@@ -5,7 +5,7 @@ pipeline {
 
     stage ('Report tests') {
       steps {
-        nunit testResultsPattern: 'custom_files/testResultsSuccess.xml', failIfNoResults: true
+        nunit testResultsPattern: 'custom_files/testResultsSuccess_less.xml', failIfNoResults: true
       }
     }
 
