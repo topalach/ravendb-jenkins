@@ -78,6 +78,7 @@ def getPreviousTestTotal(String jobName, int buildNumber) {
 
     return failCount + passCount + skipCount
   } catch(Exception e) {
+    echo "[LOG] did not find test results for ${jobName} #${buildNumber}"
     return -1
   }
 }
@@ -88,7 +89,7 @@ def getTestCountChange(String jobName, int buildNumber, Integer currentTotal) {
   def maxTries = 20
   def count = 0
 
-  while (previousTotal < 0 && count <= maxTries) {
+  while (previousTotal < 0 && count <= maxTries && tempBuildNumber > 0) {
     tempBuildNumber--
     count++
     previousTotal = getPreviousTestTotal(jobName, tempBuildNumber)
