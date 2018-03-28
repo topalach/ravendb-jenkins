@@ -36,8 +36,12 @@ def addSlackMessageForTestSuccess(String jobDisplayName, String summary, String 
   appendToSlackMessage(jobDisplayName, summary, jobUrl, "good")
 }
 
-def getTestSummary(Integer failCount, Integer passCount, Integer skipCount, Integer totalCount) {
-  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}"
+def getTestSummary(Integer failCount, Integer passCount, Integer skipCount, Integer totalCount, Integer totalChange) {
+  if (totalChange == 0) {
+    return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}"
+  }
+
+  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount} (${totalChange})"
 }
 
 def getJson(String url) {
@@ -47,7 +51,7 @@ def getJson(String url) {
 }
 
 def getLastCompletedBuild(String jobName) {
-  return getJson("${env.serverAddress}/job/${jobName}/lastCompletedBuild/api/json?tree=result,url,duration")
+  return getJson("${env.serverAddress}/job/${jobName}/lastCompletedBuild/api/json?tree=result,url,duration,number")
 }
 
 def getTestReport(String jobName) {
@@ -64,12 +68,46 @@ def getTimeoutMessage(String jobName, int buildDuration) {
     return "Build timed out."
 }
 
+def getPreviousTestTotal(String jobName, int buildNumber) {
+  try {
+    def previousTestResults = getJson("${env.serverAddress}/job/${jobName}/${buildNumber}/testReport/api/json?tree=failCount,passCount,skipCount")
+
+    def failCount = tests['failCount'] as Integer
+    def passCount = tests['passCount'] as Integer
+    def skipCount = tests['skipCount'] as Integer
+
+    return failCount + passCount + skipCount
+  } catch(Exception e) {
+    return -1
+  }
+}
+
+def getTestCountChange(String jobName, int buildNumber, Integer currentTotal) {
+  def previousTotal = -1
+  def tempBuildNumber = buildNumber
+  def maxTries = 20
+  def count = 0
+
+  while (previousTotal < 0 && count <= maxTries) {
+    tempBuildNumber--
+    count++
+    previousTotal = getPreviousTestTotal(jobName, tempBuildNumber)
+  }
+
+  if (previousTotal < 0) {
+    return 0
+  }
+
+  return currentTotal - previousTotal
+}
+
 def setSlackMessageForJob(String jobName, String jobDisplayName) {
   script {
     def build = getLastCompletedBuild(jobName)
     def buildUrl = build['url']
     def buildResult = build['result']
     def duration = (int)build['duration']
+    def buildNumber = (int)build['number']
 
     def tests
     try {
@@ -101,7 +139,8 @@ def setSlackMessageForJob(String jobName, String jobDisplayName) {
       return
     }
 
-    def testSummary = getTestSummary(failCount, passCount, skipCount, totalCount)
+    def totalChange = getTestCountChange(jobName, buildNumber, totalCount)
+    def testSummary = getTestSummary(failCount, passCount, skipCount, totalCount, totalChange)
 
     if (failCount > 0 || buildResult == "FAILURE" || buildResult == "ABORTED") {
       def wasTimeout = checkIfWasTimeout(jobName)
@@ -145,8 +184,7 @@ pipeline {
 
     stage('report') {
       steps {
-          echo slackAttachments
-        // slackSend channel: "#general", message: "", attachments: "[${slackAttachments}]"
+        echo slackAttachments
       }
     }
 
