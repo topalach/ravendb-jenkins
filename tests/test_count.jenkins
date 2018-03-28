@@ -72,9 +72,9 @@ def getPreviousTestTotal(String jobName, int buildNumber) {
   try {
     def previousTestResults = getJson("${env.serverAddress}/job/${jobName}/${buildNumber}/testReport/api/json?tree=failCount,passCount,skipCount")
 
-    def failCount = tests['failCount'] as Integer
-    def passCount = tests['passCount'] as Integer
-    def skipCount = tests['skipCount'] as Integer
+    def failCount = previousTestResults['failCount'] as Integer
+    def passCount = previousTestResults['passCount'] as Integer
+    def skipCount = previousTestResults['skipCount'] as Integer
 
     return failCount + passCount + skipCount
   } catch(Exception e) {
