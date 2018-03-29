@@ -36,17 +36,6 @@ def addSlackMessageForTestSuccess(String jobDisplayName, String summary, String 
   appendToSlackMessage(jobDisplayName, summary, jobUrl, "good")
 }
 
-def getTestSummary(Integer failCount, Integer passCount, Integer skipCount, Integer totalCount, Integer totalChange) {
-  def changeText = ""
-  if (totalChange > 0) {
-    changeText = " (+${totalChange})"
-  } else if (totalChange < 0) {
-    changeText = " (${totalChange})"
-  }
-
-  return "Failed: ${failCount} | Passed: ${passCount} | Skipped: ${skipCount} | Total: ${totalCount}${changeText}"
-}
-
 def getJson(String url) {
   def response = httpRequest url: url, authentication: env.credentialsId
   def json = readJSON text: response.getContent()
@@ -71,38 +60,54 @@ def getTimeoutMessage(String jobName, int buildDuration) {
     return "Build timed out."
 }
 
-def getPreviousTestTotal(String jobName, int buildNumber) {
-  try {
-    def previousTestResults = getJson("${env.serverAddress}/job/${jobName}/${buildNumber}/testReport/api/json?tree=failCount,passCount,skipCount")
+def getCountText(Integer currentCount, Integer previousCount) {
+  def difference = currentCount - previousCount
+  def changeText = ""
 
-    def failCount = previousTestResults['failCount'] as Integer
-    def passCount = previousTestResults['passCount'] as Integer
-    def skipCount = previousTestResults['skipCount'] as Integer
-
-    return failCount + passCount + skipCount
-  } catch(Exception e) {
-    echo "[LOG] did not find test results for ${jobName} #${buildNumber}"
-    return -1
+  if (difference > 0) {
+    changeText = " (+${difference})"
+  } else if (difference < 0) {
+    changeText = " (${difference})"
   }
+
+  return "${currentCount}${changeText}"
 }
 
-def getTestCountChange(String jobName, int buildNumber, Integer currentTotal) {
-  def previousTotal = -1
+def getTestSummary(String jobName, int buildNumber, Integer failed, Integer passed, Integer skipped, Integer total) {
+  def previousFailed = failed
+  def previousPassed = passed
+  def previousSkipped = skipped
+  def previousTotal = total
+
+  def tryAgain = true
   def tempBuildNumber = buildNumber
   def maxTries = 20
   def count = 0
 
-  while (previousTotal < 0 && count <= maxTries && tempBuildNumber > 0) {
+  while (tryAgain && count <= maxTries && tempBuildNumber > 0) {
     tempBuildNumber--
     count++
-    previousTotal = getPreviousTestTotal(jobName, tempBuildNumber)
+
+    try {
+      def previousTestResults = getJson("${env.serverAddress}/job/${jobName}/${tempBuildNumber}/testReport/api/json?tree=failCount,passCount,skipCount")
+
+      previousFailed = previousTestResults['failCount'] as Integer
+      previousPassed = previousTestResults['passCount'] as Integer
+      previousSkipped = previousTestResults['skipCount'] as Integer
+
+      previousTotal = previousFailed + previousPassed + previousSkipped
+      tryAgain = false
+    } catch(Exception e) {
+      echo "[LOG] did not find test results for ${jobName} #${tempBuildNumber}"
+    }
   }
 
-  if (previousTotal < 0) {
-    return 0
-  }
+  def failedText = getCountText(failed, previousFailed)
+  def passedText = getCountText(passed, previousPassed)
+  def skippedText = getCountText(skipped, previousSkipped)
+  def totalText = getCountText(total, previousTotal)
 
-  return currentTotal - previousTotal
+  return "Failed: ${failedText} | Passed: ${passedText} | Skipped: ${skippedText} | Total: ${totalText}"
 }
 
 def setSlackMessageForJob(String jobName, String jobDisplayName) {
@@ -143,8 +148,7 @@ def setSlackMessageForJob(String jobName, String jobDisplayName) {
       return
     }
 
-    def totalChange = getTestCountChange(jobName, buildNumber, totalCount)
-    def testSummary = getTestSummary(failCount, passCount, skipCount, totalCount, totalChange)
+    def testSummary = getTestSummary(jobName, buildNumber, failCount, passCount, skipCount, totalCount)
 
     if (failCount > 0 || buildResult == "FAILURE" || buildResult == "ABORTED") {
       def wasTimeout = checkIfWasTimeout(jobName)
